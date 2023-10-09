@@ -15,8 +15,8 @@ import java.time.LocalDateTime;
 @NamedNativeQuery(name = "ViewStatsAllUriDistinct",
         query = "select h.app as app, " +
                 "h.uri as uri, " +
-                "count(distinct h.ip) as hits, " +
-                "from hits as h where h.timestamp between ?1 and ?2 group by h.uri order by hits desc",
+                "count(distinct h.ip) as hits " +
+                "from hits as h where h.timestamp between ?1 and ?2 group by h.app, h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStatsAllUri",
         query = "select h.app as app, " +
@@ -27,8 +27,8 @@ import java.time.LocalDateTime;
 @NamedNativeQuery(name = "ViewStatsDistinct",
         query = "select h.app as app, " +
                 "h.uri as uri, " +
-                "count(distinct h.ip) as hits, " +
-                "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.uri order by hits desc",
+                "count(distinct h.ip) as hits " +
+                "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.app, h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStats",
         query = "select h.app as app, " +
@@ -45,10 +45,14 @@ import java.time.LocalDateTime;
 )
 public class Stats {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "app")
     String app;
+    @Column(name = "uri")
     String uri;
+    @Column(name = "ip")
     String ip;
+    @Column(name = "timestamp")
     LocalDateTime timestamp;
 }
