@@ -35,7 +35,7 @@ public class StatsClient extends BaseClient {
         String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
         StringBuilder sb = new StringBuilder();
         String urisString = uris.toString();
-        urisString = sb.append(urisString, 1, urisString.length()-1).toString();
+        urisString = sb.append(urisString, 1, urisString.length() - 1).toString();
         return get("/stats?start=" + encodedStart + "&end=" + encodedEnd + "&uris=" + urisString + "&unique=" + unique);
     }
 }
