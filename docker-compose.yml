@@ -11,7 +11,7 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/hits
       - SPRING_DATASOURCE_USERNAME=tbdggr
-      - SPRING_DATASOURCE_PASSWORD=121065
+      - SPRING_DATASOURCE_PASSWORD=121060
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
 
   stats-client:
@@ -35,7 +35,7 @@ services:
     environment:
       - POSTGRES_DB=hits
       - POSTGRES_USER=tbdggr
-      - POSTGRES_PASSWORD=121065
+      - POSTGRES_PASSWORD=121060
 #
 #  ewm-service:
 #    build: ewm-service
