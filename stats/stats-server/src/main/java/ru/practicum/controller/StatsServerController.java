@@ -11,7 +11,6 @@ import ru.practicum.dto.EndpointHit;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.service.StatsServerServiceImpl;
 
-import javax.xml.bind.ValidationException;
 import java.util.List;
 
 

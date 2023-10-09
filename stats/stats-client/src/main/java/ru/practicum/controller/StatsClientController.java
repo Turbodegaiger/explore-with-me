@@ -44,7 +44,7 @@ public class StatsClientController {
         log.info("Принят запрос на получение статистики по посещениям: start={}, end={}, uris={}, unique={}" + "\n" +
                 "Отправляем запрос на сервер stats-server...", start, end, uris, unique);
         ResponseEntity<Object> viewStatsList = statsClient.getStats(start, end, uris, unique);
-        log.info("Принят ответ от сервера stats-server. " +"\n" +
+        log.info("Принят ответ от сервера stats-server. " + "\n" +
                 "Выгружен список статистики по посещениям: {}", viewStatsList);
         return viewStatsList;
     }
