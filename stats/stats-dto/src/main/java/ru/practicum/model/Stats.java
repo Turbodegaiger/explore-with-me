@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NamedNativeQuery(name = "ViewStatsAllUriDistinct",
         query = "select h.app as app, " +
                 "h.uri as uri, " +
-                "count(distinct h.ip) as hits, " +
+                "count(distinct h.ip) as hits " +
                 "from hits as h where h.timestamp between ?1 and ?2 group by h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStatsAllUri",
@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @NamedNativeQuery(name = "ViewStatsDistinct",
         query = "select h.app as app, " +
                 "h.uri as uri, " +
-                "count(distinct h.ip) as hits, " +
+                "count(distinct h.ip) as hits " +
                 "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStats",
@@ -36,12 +36,12 @@ import java.time.LocalDateTime;
                 "count(h.uri) as hits " +
                 "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.app, h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
-@SqlResultSetMapping(name="ViewStatsResult",
-        entities={
-                @EntityResult(entityClass=ru.practicum.dto.ViewStats.class, fields={
-                        @FieldResult(name="app", column="app"),
-                        @FieldResult(name="uri", column="uri"),
-                        @FieldResult(name="hits", column="hits")})}
+@SqlResultSetMapping(name = "ViewStatsResult",
+        entities = {
+                @EntityResult(entityClass = ru.practicum.dto.ViewStats.class, fields = {
+                        @FieldResult(name = "app", column = "app"),
+                        @FieldResult(name = "uri", column = "uri"),
+                        @FieldResult(name = "hits", column = "hits")})}
 )
 public class Stats {
     @Id
