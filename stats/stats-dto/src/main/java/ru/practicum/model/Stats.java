@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
         query = "select h.app as app, " +
                 "h.uri as uri, " +
                 "count(distinct h.ip) as hits " +
-                "from hits as h where h.timestamp between ?1 and ?2 group by h.uri order by hits desc",
+                "from hits as h where h.timestamp between ?1 and ?2 group by h.app, h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStatsAllUri",
         query = "select h.app as app, " +
@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
         query = "select h.app as app, " +
                 "h.uri as uri, " +
                 "count(distinct h.ip) as hits " +
-                "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.uri order by hits desc",
+                "from hits as h where h.uri in (?1) and (h.timestamp between ?2 and ?3) group by h.app, h.uri order by hits desc",
         resultSetMapping = "ViewStatsResult")
 @NamedNativeQuery(name = "ViewStats",
         query = "select h.app as app, " +

@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   stats-server:
-    build: stats-server
+    build: stats/stats-server
     image: stats-server-image
     container_name: stats-server-container
     ports:
@@ -9,43 +9,56 @@ services:
     depends_on:
       - stats-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:9090/stats
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/hits
       - SPRING_DATASOURCE_USERNAME=tbdggr
       - SPRING_DATASOURCE_PASSWORD=121065
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+
+  stats-client:
+    build: stats/stats-client
+    image: stats-client-image
+    container_name: stats-client-container
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats-server
+    environment:
+      - STATS_SERVER_URL=http://stats-server:9080
 
   stats-db:
     image: postgres:14-alpine
     container_name: stats-db-container
     ports:
-      - "9090:9090"
+      - "5432:5432"
+    volumes:
+      - .:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_DB=stats
+      - POSTGRES_DB=hits
       - POSTGRES_PASSWORD=121065
       - POSTGRES_USER=tbdggr
 
-  ewm-service:
-    build: ewm-service
-    image: ewm-service-service
-    container_name: ewm-service-container
-    ports:
-      - "8080:8080"
-    depends_on:
-      - stats-server
-      - ewm-db
-    environment:
-      - STATS_SERVER_URL=http://stats-server::9080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:8090/ewm
-      - SPRING_DATASOURCE_USERNAME=tbdggr
-      - SPRING_DATASOURCE_PASSWORD=151142
-      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
-
-  ewm-db:
-    image: postgres:14-alpine
-    container_name: ewm-db-container
-    ports:
-      - "8090:8090"
-    environment:
-      - POSTGRES_DB=ewm
-      - POSTGRES_PASSWORD=151142
-      - POSTGRES_USER=tbdggr
+#  ewm-service:
+#    build: ewm-service
+#    image: ewm-service-service
+#    container_name: ewm-service-container
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - stats-server
+#      - ewm-db
+#    environment:
+#      - STATS_SERVER_URL=http://stats-server::9080
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:8090/ewm
+#      - SPRING_DATASOURCE_USERNAME=tbdggr
+#      - SPRING_DATASOURCE_PASSWORD=151142
+#      - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver
+#
+#  ewm-db:
+#    image: postgres:14-alpine
+#    container_name: ewm-db-container
+#    ports:
+#      - "8090:8090"
+#    environment:
+#      - POSTGRES_DB=ewm
+#      - POSTGRES_PASSWORD=151142
+#      - POSTGRES_USER=tbdggr
