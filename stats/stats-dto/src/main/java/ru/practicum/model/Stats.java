@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
 )
 public class Stats {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String app;
     String uri;
