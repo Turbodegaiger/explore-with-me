@@ -23,7 +23,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StatsServerServiceImpl implements StatsServerService {
     @Autowired
-    StatsRepository repository;
+    private final StatsRepository repository;
 
     @Override
     public void saveHit(EndpointHit hit) {

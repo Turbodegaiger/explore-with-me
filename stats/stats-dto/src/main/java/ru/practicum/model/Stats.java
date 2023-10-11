@@ -46,9 +46,9 @@ import java.time.LocalDateTime;
 public class Stats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String app;
-    String uri;
-    String ip;
-    LocalDateTime timestamp;
+    private Long id;
+    private String app;
+    private String uri;
+    private String ip;
+    private LocalDateTime timestamp;
 }

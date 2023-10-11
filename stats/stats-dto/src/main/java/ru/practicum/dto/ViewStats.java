@@ -12,8 +12,8 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ViewStats {
-    String app;
+    private String app;
     @Id
-    String uri;
-    Integer hits;
+    private String uri;
+    private Integer hits;
 }

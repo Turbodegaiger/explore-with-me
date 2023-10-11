@@ -9,12 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EndpointHit {
-    Integer id;
+    private Integer id;
     @NotNull
-    String app;
+    private String app;
     @NotNull
-    String uri;
+    private String uri;
     @NotNull
-    String ip;
-    String timestamp;
+    private String ip;
+    private String timestamp;
 }

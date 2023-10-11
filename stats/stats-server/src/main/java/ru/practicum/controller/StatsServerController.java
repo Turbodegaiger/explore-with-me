@@ -21,7 +21,7 @@ import java.util.List;
 @Validated
 public class StatsServerController {
     @Autowired
-    StatsServerServiceImpl service;
+    private final StatsServerServiceImpl service;
 
     @PostMapping(value = "/hit", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
