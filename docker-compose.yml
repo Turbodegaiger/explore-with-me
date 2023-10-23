@@ -31,7 +31,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./stats/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./stats/stats-server/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       - POSTGRES_DB=hits
       - POSTGRES_PASSWORD=121065
@@ -44,7 +44,7 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - stats-server
+      - stats-client
       - ewm-db
     environment:
       - STATS_SERVER_URL=http://stats-server::9080
@@ -59,7 +59,7 @@ services:
     ports:
       - "8090:8090"
     volumes:
-      - ./main-service/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./main-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
     environment:
       - POSTGRES_DB=ewm
       - POSTGRES_PASSWORD=151142

@@ -1,20 +1,22 @@
 package ru.practicum.dto.compilation;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class NewCompilationDto {
-    List<Integer> events;
-    Boolean pinned;
+    private List<Long> events;
+    private Boolean pinned;
     @NotEmpty
     @Size(min = 1, max = 50)
-    String title;
+    private String title;
 
-    public NewCompilationDto(List<Integer> events, Boolean pinned, String title) {
+    public NewCompilationDto(List<Long> events, Boolean pinned, String title) {
         if (events != null) {
             this.events = events;
         }

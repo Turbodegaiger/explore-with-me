@@ -2,33 +2,43 @@ package ru.practicum.service;
 
 import org.springframework.http.ResponseEntity;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.category.NewCategoryDto;
+import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.compilation.NewCompilationDto;
 import ru.practicum.dto.compilation.UpdateCompilationRequest;
-import ru.practicum.dto.event.EventsAdminSearchDto;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.user.NewUserRequest;
+import ru.practicum.dto.user.UserDto;
 
 import java.util.List;
 public interface AdminService {
-    ResponseEntity<Object> createCategory(CategoryDto categoryDto);
+    ResponseEntity<CategoryDto> createCategory(NewCategoryDto categoryDto);
 
-    ResponseEntity<Object> removeCategory(Integer catId);
+    void removeCategory(Long catId);
 
-    ResponseEntity<Object> updateCategory(CategoryDto categoryDto, Integer catId);
+    ResponseEntity<CategoryDto> updateCategory(CategoryDto categoryDto, Long catId);
 
-    ResponseEntity<Object> getEvents(EventsAdminSearchDto searchDto);
+    ResponseEntity<List<EventFullDto>> getEvents(
+            List<Long> users,
+            List<String> states,
+            List<Long> categories,
+            String rangeStart,
+            String rangeEnd,
+            Integer from,
+            Integer size);
 
-    ResponseEntity<Object> updateEvent(UpdateEventAdminRequest update, Integer eventId);
+    ResponseEntity<EventFullDto> updateEvent(UpdateEventAdminRequest update, Long eventId);
 
-    ResponseEntity<Object> getUsers(List<Integer> ids, Integer from, Integer size);
+    ResponseEntity<List<UserDto>> getUsers(List<Long> ids, Integer from, Integer size);
 
-    ResponseEntity<Object> createUser(NewUserRequest newUserRequest);
+    ResponseEntity<UserDto> createUser(NewUserRequest newUserRequest);
 
-    ResponseEntity<Object> deleteUser(Integer userId);
+    void deleteUser(Long userId);
 
-    ResponseEntity<Object> createCompilation(NewCompilationDto newCompilationDto);
+    ResponseEntity<CompilationDto> createCompilation(NewCompilationDto newCompilationDto);
 
-    ResponseEntity<Object> deleteCompilation(Integer compId);
+    void deleteCompilation(Long compId);
 
-    ResponseEntity<Object> updateCompilation(UpdateCompilationRequest update, Integer compId);
+    ResponseEntity<CompilationDto> updateCompilation(UpdateCompilationRequest update, Long compId);
 }

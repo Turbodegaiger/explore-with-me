@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventsPublicSearchDto;
@@ -13,7 +12,7 @@ import ru.practicum.service.PublicService;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @Slf4j
 @Validated
@@ -32,7 +31,7 @@ public class PublicController {
 
     @GetMapping("/compilations/{compId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getCompilationById(@PathVariable Integer compId) {
+    public ResponseEntity<Object> getCompilationById(@PathVariable Long compId) {
         log.info("Принят public запрос на поиск подборки событий с id = {}", compId);
         return service.getCompilationById(compId);
     }
@@ -47,7 +46,7 @@ public class PublicController {
 
     @GetMapping("/categories/{catId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getCategoryById(@PathVariable Integer catId) {
+    public ResponseEntity<Object> getCategoryById(@PathVariable Long catId) {
         log.info("Принят public запрос на получение категории с id = {}.", catId);
         return service.getCategoryById(catId);
     }
@@ -55,7 +54,7 @@ public class PublicController {
     @GetMapping("/events")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<Object> getEvents(@RequestParam(required = false) String text,
-                                            @RequestParam(required = false) List<Integer> categories,
+                                            @RequestParam(required = false) List<Long> categories,
                                             @RequestParam(required = false) Boolean paid,
                                             @RequestParam(required = false) String rangeStart,
                                             @RequestParam(required = false) String rangeEnd,
@@ -71,7 +70,7 @@ public class PublicController {
 
     @GetMapping("/events/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getEventById(@PathVariable Integer id) {
+    public ResponseEntity<Object> getEventById(@PathVariable Long id) {
         log.info("Принят public запрос на получение события с id = {}.", id);
         return service.getEventById(id);
     }

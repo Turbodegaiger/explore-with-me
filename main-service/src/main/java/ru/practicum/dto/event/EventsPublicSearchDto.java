@@ -2,7 +2,6 @@ package ru.practicum.dto.event;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import ru.practicum.enums.event.EventSort;
 import ru.practicum.util.DateTimeUtils;
 
@@ -11,10 +10,9 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class EventsPublicSearchDto {
     private String text;
-    private List<Integer> categories;
+    private List<Long> categories;
     private Boolean paid;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
@@ -24,7 +22,7 @@ public class EventsPublicSearchDto {
     private Integer size;
 
     public EventsPublicSearchDto(String text,
-                                 List<Integer> categories,
+                                 List<Long> categories,
                                  Boolean paid,
                                  String rangeStart,
                                  String rangeEnd,

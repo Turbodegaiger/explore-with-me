@@ -12,10 +12,18 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class CategoryDto {
     @Getter
-    private Integer id;
+    private Long id;
     @NotEmpty
     @Size(min = 1, max = 50)
     @Getter
     @Setter
     private String name;
+
+    @Override
+    public String toString() {
+        return "CategoryDto{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }

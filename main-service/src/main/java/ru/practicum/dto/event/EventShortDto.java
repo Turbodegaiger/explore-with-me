@@ -19,12 +19,12 @@ public class EventShortDto {
     private Integer confirmedRequests;
     @NotEmpty
     private String eventDate;
-    private Integer id;
+    private Long id;
     @NotEmpty
     private UserShortDto initiator;
     @NotEmpty
     private Boolean paid;
     @NotEmpty
     private String title;
-    private Integer views;
+    private Long views;
 }

@@ -2,7 +2,6 @@ package ru.practicum.dto.event;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import ru.practicum.enums.event.EventAdminState;
 import ru.practicum.util.DateTimeUtils;
 
@@ -12,19 +11,18 @@ import java.util.List;
 
 @Data
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class EventsAdminSearchDto {
-    private List<Integer> users;
+    private List<Long> users;
     private List<EventAdminState> states;
-    private List<Integer> categories;
+    private List<Long> categories;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
     private Integer from;
     private Integer size;
 
-    public EventsAdminSearchDto(List<Integer> users,
+    public EventsAdminSearchDto(List<Long> users,
                                 List<String> states,
-                                List<Integer> categories,
+                                List<Long> categories,
                                 String rangeStart,
                                 String rangeEnd,
                                 Integer from,

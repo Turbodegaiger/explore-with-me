@@ -15,10 +15,15 @@ public class DateTimeUtils {
     }
 
     public static LocalDateTime formatToLocalDT(String dateTime) {
-        if (dateTime != null) {
+        if (dateTime != null && !dateTime.isEmpty()) {
             return LocalDateTime.parse(dateTime, formatter);
         } else {
             return null;
         }
+    }
+
+    public static LocalDateTime getCurrentTime() {
+        LocalDateTime dt = LocalDateTime.now();
+        return dt.minusNanos(dt.getNano());
     }
 }
