@@ -6,6 +6,7 @@ import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
+import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
 
 import java.util.List;
@@ -21,7 +22,9 @@ public interface PrivateService {
 
     ResponseEntity<List<ParticipationRequestDto>> getRequestsToEvent(Long userId, Long eventId);
 
-    ResponseEntity<EventRequestStatusUpdateRequest> updateRequestStatus(Long userId, Long eventId, EventRequestStatusUpdateRequest update);
+    ResponseEntity<EventRequestStatusUpdateResult> updateRequestStatus(Long userId,
+                                                                       Long eventId,
+                                                                       EventRequestStatusUpdateRequest update);
 
     ResponseEntity<List<ParticipationRequestDto>> getUserRequests(Long userId);
 

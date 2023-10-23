@@ -12,7 +12,7 @@ import ru.practicum.dto.user.UserShortDto;
 public class EventFullDto {
     String annotation;
     CategoryDto category;
-    Integer confirmedRequests;
+    Long confirmedRequests;
     String createdOn;
     String description;
     String eventDate;

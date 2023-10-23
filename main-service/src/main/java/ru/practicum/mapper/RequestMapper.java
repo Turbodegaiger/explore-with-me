@@ -1,13 +1,12 @@
 package ru.practicum.mapper;
 
-import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
+import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.model.Request;
 import ru.practicum.util.DateTimeUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RequestMapper {
     public static ParticipationRequestDto mapRequestToRequestDto(Request request) {
@@ -27,11 +26,9 @@ public class RequestMapper {
         return requestDtoList;
     }
 
-    public static EventRequestStatusUpdateRequest mapRequestToStatusUpdateDto(List<Request> requests) {
-        return new EventRequestStatusUpdateRequest(
-                requests.stream()
-                .map(Request::getId)
-                .collect(Collectors.toList()),
-                requests.get(0).getStatus().toString());
+    public static EventRequestStatusUpdateResult mapRequestToStatusUpdateDto(List<Request> confirmed, List<Request> rejected) {
+        return new EventRequestStatusUpdateResult(
+                mapRequestToRequestDtoList(confirmed),
+                mapRequestToRequestDtoList(rejected));
     }
 }

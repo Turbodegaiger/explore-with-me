@@ -5,9 +5,9 @@ import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.event.UpdateEventRequest;
 import ru.practicum.dto.event.UpdateEventUserRequest;
-import ru.practicum.enums.event.EventAdminState;
+import ru.practicum.enums.event.EventAdminStateAction;
 import ru.practicum.enums.event.EventState;
-import ru.practicum.enums.event.EventUserState;
+import ru.practicum.enums.event.EventUserStateAction;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.Event;
 import ru.practicum.util.DateTimeUtils;
@@ -36,7 +36,7 @@ public class ValidatorForEvent {
     public static EventState validateStateForAdminUpdate(UpdateEventAdminRequest update, Event oldEvent) {
         EventState newState = oldEvent.getState();
         if (update.getStateAction() != null
-                && EventAdminState.valueOf(update.getStateAction()).equals(EventAdminState.PUBLISH_EVENT)) {
+                && EventAdminStateAction.valueOf(update.getStateAction()).equals(EventAdminStateAction.PUBLISH_EVENT)) {
             if (!oldEvent.getState().equals(EventState.PENDING)) {
                 log.info("Cобытие можно публиковать, только если оно в состоянии ожидания публикации. " +
                         "Текущий event state={}.", oldEvent.getState());
@@ -53,7 +53,7 @@ public class ValidatorForEvent {
             newState = EventState.PUBLISHED;
         } else {
             if (update.getStateAction() != null
-                    && EventAdminState.valueOf(update.getStateAction()).equals(EventAdminState.REJECT_EVENT)) {
+                    && EventAdminStateAction.valueOf(update.getStateAction()).equals(EventAdminStateAction.REJECT_EVENT)) {
                 if (oldEvent.getState().equals(EventState.PUBLISHED)) {
                     log.info("Cобытие можно отклонить, только если оно ещё не опубликовано. " +
                             "Текущий event state={}.", oldEvent.getState());
@@ -66,16 +66,18 @@ public class ValidatorForEvent {
         return newState;
     }
 
-    public static EventState validateStateForUserUpdate(UpdateEventUserRequest update, Event oldEvent) {
-        EventState newState = oldEvent.getState();
-           if (!oldEvent.getState().equals(EventState.PENDING) || !oldEvent.getState().equals(EventState.CANCELED)) {
+    public static EventState validateStateForUserUpdate(UpdateEventUserRequest update, Event oldEvent, EventState newState) {
+        if (update.getStateAction() == null) {
+            return newState;
+        }
+           if (!oldEvent.getState().equals(EventState.PENDING) && !oldEvent.getState().equals(EventState.CANCELED)) {
                log.info("Cобытие можно изменить, только если оно в состоянии ожидания публикации или отменено. " +
                        "Текущий event state={}.", oldEvent.getState());
                throw new ValidationException(String.format("Cannot update event because event state should be " +
                        " PENDING or CANCELED. Current state is: %s.", oldEvent.getState()));
-           } else if (EventUserState.valueOf(update.getStateAction()).equals(EventUserState.CANCEL_REVIEW)) {
+           } else if (EventUserStateAction.valueOf(update.getStateAction()).equals(EventUserStateAction.CANCEL_REVIEW)) {
                newState = EventState.CANCELED;
-           } else if (EventUserState.valueOf(update.getStateAction()).equals(EventUserState.SEND_TO_REVIEW)) {
+           } else if (EventUserStateAction.valueOf(update.getStateAction()).equals(EventUserStateAction.SEND_TO_REVIEW)) {
                newState = EventState.PENDING;
            }
         return newState;

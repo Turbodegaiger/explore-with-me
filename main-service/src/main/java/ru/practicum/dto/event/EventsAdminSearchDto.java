@@ -2,7 +2,7 @@ package ru.practicum.dto.event;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.enums.event.EventAdminState;
+import ru.practicum.enums.event.EventAdminStateAction;
 import ru.practicum.util.DateTimeUtils;
 
 import java.time.LocalDateTime;
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EventsAdminSearchDto {
     private List<Long> users;
-    private List<EventAdminState> states;
+    private List<EventAdminStateAction> states;
     private List<Long> categories;
     private LocalDateTime rangeStart;
     private LocalDateTime rangeEnd;
@@ -45,14 +45,14 @@ public class EventsAdminSearchDto {
     }
 
     public void setStates(List<String> states) {
-        List<EventAdminState> eventAdminStates = new ArrayList<>();
+        List<EventAdminStateAction> eventAdminStateActions = new ArrayList<>();
         if (states != null && !states.isEmpty()) {
             for (String s : states) {
                 if (s != null) {
-                    eventAdminStates.add(EventAdminState.valueOf(s));
+                    eventAdminStateActions.add(EventAdminStateAction.valueOf(s));
                 }
             }
         }
-        this.states = eventAdminStates;
+        this.states = eventAdminStateActions;
     }
 }

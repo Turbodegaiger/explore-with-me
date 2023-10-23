@@ -7,7 +7,6 @@ import ru.practicum.enums.event.EventState;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -68,6 +67,7 @@ public class Event {
     private String title;
     private Long rating;
     private Boolean paid;
+    private Boolean available;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator")
     private User initiator;
@@ -75,9 +75,7 @@ public class Event {
     @Enumerated(EnumType.STRING)
     private EventState state;
     private Integer participantLimit;
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "confirmed_requests")
-    private List<Request> confirmedRequests;
+    private Long confirmedRequests;
     private Boolean requestModeration;
 
     @Override

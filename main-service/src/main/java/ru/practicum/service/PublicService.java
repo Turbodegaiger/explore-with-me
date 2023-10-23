@@ -1,18 +1,23 @@
 package ru.practicum.service;
 
 import org.springframework.http.ResponseEntity;
+import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.compilation.CompilationDto;
+import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventsPublicSearchDto;
 
+import java.util.List;
+
 public interface PublicService {
-    ResponseEntity<Object> getCompilations(Boolean pinned, Integer from, Integer size);
+    ResponseEntity<List<CompilationDto>> getCompilations(Boolean pinned, Integer from, Integer size);
 
-    ResponseEntity<Object> getCompilationById(Long compId);
+    ResponseEntity<CompilationDto> getCompilationById(Long compId);
 
-    ResponseEntity<Object> getCategories(Integer from, Integer size);
+    ResponseEntity<List<CategoryDto>> getCategories(Integer from, Integer size);
 
-    ResponseEntity<Object> getCategoryById(Long catId);
+    ResponseEntity<CategoryDto> getCategoryById(Long catId);
 
-    ResponseEntity<Object> getEvents(EventsPublicSearchDto searchDto);
+    ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto searchDto);
 
     ResponseEntity<Object> getEventById(Long id);
 }

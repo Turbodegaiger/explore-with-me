@@ -16,7 +16,7 @@ public class EventShortDto {
     private String annotation;
     @NotEmpty
     private CategoryDto category;
-    private Integer confirmedRequests;
+    private Long confirmedRequests;
     @NotEmpty
     private String eventDate;
     private Long id;

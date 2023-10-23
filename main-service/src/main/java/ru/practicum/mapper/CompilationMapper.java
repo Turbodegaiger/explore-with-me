@@ -6,6 +6,7 @@ import ru.practicum.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.model.Compilation;
 import ru.practicum.model.Event;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompilationMapper {
@@ -15,6 +16,14 @@ public class CompilationMapper {
 
     public static CompilationDto mapCompilationToCompilationDto(Compilation compilation) {
         return new CompilationDto(compilation.getEvent(), compilation.getId(), compilation.getPinned(), compilation.getTitle());
+    }
+
+    public static List<CompilationDto> mapCompilationToCompilationDtoList(Iterable<Compilation> compilation) {
+        List<CompilationDto> compilationDtoList = new ArrayList<>();
+        for (Compilation comp : compilation) {
+            compilationDtoList.add(mapCompilationToCompilationDto(comp));
+        }
+        return compilationDtoList;
     }
 
     public static Compilation mapUpdateToCompilationDto(Long compId, List<Event> events, UpdateCompilationRequest update, Compilation oldCompilation) {

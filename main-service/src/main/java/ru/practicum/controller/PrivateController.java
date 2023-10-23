@@ -12,6 +12,7 @@ import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
+import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
 import ru.practicum.service.PrivateService;
 
@@ -71,9 +72,9 @@ public class PrivateController {
 
     @PatchMapping("/{userId}/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<EventRequestStatusUpdateRequest> updateRequestStatus(@PathVariable Long userId,
-                                                                               @PathVariable Long eventId,
-                                                                               @RequestBody EventRequestStatusUpdateRequest update) {
+    public ResponseEntity<EventRequestStatusUpdateResult> updateRequestStatus(@PathVariable Long userId,
+                                                                              @PathVariable Long eventId,
+                                                                              @RequestBody EventRequestStatusUpdateRequest update) {
         log.info("Принят private запрос на обновление статуса запроса на участие в событии id = {} пользователем id = {}: {}.", eventId, userId, update);
         return service.updateRequestStatus(userId, eventId, update);
     }
@@ -88,7 +89,7 @@ public class PrivateController {
     @PostMapping("/{userId}/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ParticipationRequestDto> createRequestToEvent(@PathVariable Long userId,
-                                                                        @PathVariable Long eventId) {
+                                                                        @RequestParam Long eventId) {
         log.info("Принят private запрос на создание запроса на участие в событии id = {} пользователем id = {}.", eventId, userId);
         return service.createRequestToEvent(userId, eventId);
     }

@@ -128,14 +128,13 @@ public class AdminServiceImpl implements AdminService {
         if (!rangeEnd.isEmpty()) {
             builderTotal.and(event.eventDate.before(DateTimeUtils.formatToLocalDT(rangeEnd)));
         }
-        Iterable<Event> foundEvents = eventRepository.findAll(builderTotal, pageParams);
+        List<EventFullDto> foundEvents = EventMapper.mapEventToEventFullDtoList(
+                eventRepository.findAll(builderTotal, pageParams));
         log.info("Успешно выведен список событий по переданным параметрам: {}.", foundEvents);
-        return ResponseEntity.of(
-                Optional.of(EventMapper.mapEventToEventFullDtoList(foundEvents)));
+        return ResponseEntity.of(Optional.of(foundEvents));
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ResponseEntity<EventFullDto> updateEvent(UpdateEventAdminRequest update, Long eventId) {
         Optional<Event> oldEvent = eventRepository.findById(eventId);
         if (oldEvent.isEmpty()) {
@@ -157,9 +156,8 @@ public class AdminServiceImpl implements AdminService {
             newCategory = updatedCategory.get();
         }
         Event updatedEvent = EventMapper.mapUpdateToEvent(update, oldEvent.get(), eventId, newState, newCategory, newDateTime);
-        Event updateResult = eventRepository.save(updatedEvent);
-        EventFullDto updatedEventFullDto = EventMapper.mapEventToEventFullDto(updateResult);
-        log.info("Cобытие успешно обновлено администратором: {}", updateResult);
+        EventFullDto updatedEventFullDto = EventMapper.mapEventToEventFullDto(eventRepository.save(updatedEvent));
+        log.info("Cобытие успешно обновлено администратором: {}", updatedEventFullDto);
         return ResponseEntity.of(Optional.of(updatedEventFullDto));
     }
 

@@ -13,14 +13,6 @@ import java.util.List;
 
 public class EventMapper {
     public static Event mapNewEventDtoToEvent(NewEventDto newEventDto, Category category, User initiator) {
-//        Boolean requestModeration = true;
-//        Integer participantLimit = 0;
-//        if (newEventDto.getRequestModeration() != null) {
-//            requestModeration = newEventDto.getRequestModeration();
-//        }
-//        if (newEventDto.getParticipantLimit() != null && newEventDto.getParticipantLimit() > 0) {
-//            participantLimit = newEventDto.getParticipantLimit();
-//        }
         return new Event(
                 0L,
                 newEventDto.getAnnotation(),
@@ -32,11 +24,12 @@ public class EventMapper {
                 newEventDto.getTitle(),
                 0L,
                 newEventDto.getPaid(),
+                true,
                 initiator,
                 0L,
                 EventState.PENDING,
                 newEventDto.getParticipantLimit(),
-                new ArrayList<>(),
+                0L,
                 newEventDto.getRequestModeration());
     }
 
@@ -44,7 +37,7 @@ public class EventMapper {
         return new EventFullDto(
                 event.getAnnotation(),
                 CategoryMapper.mapCategoryToCategoryDto(event.getCategory()),
-                event.getConfirmedRequests().size(),
+                event.getConfirmedRequests(),
                 DateTimeUtils.formatToString(event.getCreatedOn()),
                 event.getDescription(),
                 DateTimeUtils.formatToString(event.getEventDate()),
@@ -102,6 +95,7 @@ public class EventMapper {
         } else {
             updatedEvent.setPaid(oldEvent.getPaid());
         }
+        updatedEvent.setAvailable(oldEvent.getAvailable());
         updatedEvent.setInitiator(oldEvent.getInitiator());
         updatedEvent.setViews(oldEvent.getViews());
         updatedEvent.setState(newState);
@@ -131,7 +125,7 @@ public class EventMapper {
         return new EventShortDto(
                 event.getAnnotation(),
                 CategoryMapper.mapCategoryToCategoryDto(event.getCategory()),
-                event.getConfirmedRequests().size(),
+                event.getConfirmedRequests(),
                 DateTimeUtils.formatToString(event.getEventDate()),
                 event.getId(),
                 UserMapper.mapUserToUserShortDto(event.getInitiator()),
