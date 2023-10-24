@@ -98,7 +98,8 @@ public class PublicServiceImpl implements PublicService {
     }
 
     @Override
-    public ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto s) {
+    public ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto s, HttpServletRequest request) {
+        saveEndpointHit(request);
         QEvent event = QEvent.event;
         BooleanBuilder builderTotal = new BooleanBuilder();
         builderTotal.and(event.state.eq(EventState.PUBLISHED));
@@ -143,7 +144,8 @@ public class PublicServiceImpl implements PublicService {
         }
         Pageable pageParams = PageRequest.of(
                 s.getFrom() > 0 ? s.getFrom() / s.getSize() : 0, s.getSize(), Sort.by(Sort.Direction.DESC, sortBy));
-        List<EventShortDto> foundEvents = EventMapper.mapEventToEventShortDtoList(eventRepository.findAll(builderTotal, pageParams));
+        List<Event> events = eventRepository.findAll(builderTotal, pageParams).toList();
+        List<EventShortDto> foundEvents = EventMapper.mapEventToEventShortDtoList(events);
         log.info("Успешно выгружены события по параметрам: {}. Values: {}", s, foundEvents);
         return ResponseEntity.of(Optional.of(foundEvents));
     }
@@ -157,7 +159,7 @@ public class PublicServiceImpl implements PublicService {
             throw new NotFoundException(
                     String.format("Event with id=%s is not found or not available, check request.", eventId));
         }
-        updateViews(eventId);
+        updateViews(event.get());
         EventFullDto fullDto = EventMapper.mapEventToEventFullDto(event.get());
         log.info("Успешно выгружено событие id={}. Value: {}", eventId, fullDto);
         return ResponseEntity.of(Optional.of(fullDto));
@@ -171,12 +173,18 @@ public class PublicServiceImpl implements PublicService {
                 request.getRemoteAddr(),
                 DateTimeUtils.formatToString(DateTimeUtils.getCurrentTime()));
         client.saveHit(hit);
-        log.info("Сохранение обращение по эндпоинту: {}.", hit);
+        log.info("Сохранение обращения по эндпоинту: {}.", hit);
     }
 
-    private void updateViews(Long eventId) {
-        Optional<Event> event = eventRepository.findById(eventId);
-        event.get().setViews(event.get().getViews() + 1);
-        eventRepository.save(event.get());
+    private void updateViews(Event event) {
+        event.setViews(event.getViews() + 1);
+        eventRepository.save(event);
+    }
+
+    private void updateViews(List<Event> events) {
+        for (Event event : events) {
+            event.setViews(event.getViews() + 1);
+        }
+        eventRepository.saveAll(events);
     }
 }

@@ -14,44 +14,6 @@ import java.util.Objects;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-//@NamedNativeQuery(name = "GetEventFullDto",
-//        query = "select e.id as id, " +
-//                "e.annotation as annotation, " +
-//                "e.category as category, " +
-//                "e.confirmed_requests as confirmed_requests, " +
-//                "e.created_on as created_on, " +
-//                "e.description as description, " +
-//                "e.event_date as event_date, " +
-//                "e.initiator as initiator, " +
-//                "e.paid as paid, " +
-//                "e.participant_limit as participant_limit, " +
-//                "e.published_on as published_on, " +
-//                "e.request_moderation as request_moderation, " +
-//                "e.state as state, " +
-//                "e.title as title, " +
-//                "e.views as views " +
-//                "from events as e where e.id=?1",
-//        resultSetMapping = "EventFullDtoResult")
-//@SqlResultSetMapping(name = "EventFullDtoResult",
-//        entities = {
-//                @EntityResult(entityClass = ru.practicum.model.Event.class, fields = {
-//                        @FieldResult(name = "annotation", column = "annotation"),
-//                        @FieldResult(name = "category", column = "category"),
-//                        @FieldResult(name = "confirmedRequests", column = "confirmed_requests"),
-//                        @FieldResult(name = "createdOn", column = "created_on"),
-//                        @FieldResult(name = "description", column = "description"),
-//                        @FieldResult(name = "eventDate", column = "event_date"),
-//                        @FieldResult(name = "id", column = "id"),
-//                        @FieldResult(name = "initiator", column = "initiator"),
-//                        @FieldResult(name = "paid", column = "paid"),
-//                        @FieldResult(name = "participantLimit", column = "participant_limit"),
-//                        @FieldResult(name = "publishedOn", column = "published_on"),
-//                        @FieldResult(name = "requestModeration", column = "request_moderation"),
-//                        @FieldResult(name = "state", column = "state"),
-//                        @FieldResult(name = "title", column = "title"),
-//                        @FieldResult(name = "views", column = "views"),
-//                })}
-//)
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -71,6 +33,9 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "initiator")
     private User initiator;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "location")
+    private LocationEntity location;
     private Long views;
     @Enumerated(EnumType.STRING)
     private EventState state;

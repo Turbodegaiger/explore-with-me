@@ -4,6 +4,7 @@ import ru.practicum.dto.event.*;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.model.Category;
 import ru.practicum.model.Event;
+import ru.practicum.model.LocationEntity;
 import ru.practicum.model.User;
 import ru.practicum.util.DateTimeUtils;
 
@@ -26,6 +27,7 @@ public class EventMapper {
                 newEventDto.getPaid(),
                 true,
                 initiator,
+                new LocationEntity(0L, newEventDto.getLocation().getLat(), newEventDto.getLocation().getLon()),
                 0L,
                 EventState.PENDING,
                 newEventDto.getParticipantLimit(),
@@ -43,6 +45,7 @@ public class EventMapper {
                 DateTimeUtils.formatToString(event.getEventDate()),
                 event.getId(),
                 UserMapper.mapUserToUserShortDto(event.getInitiator()),
+                LocationMapper.mapToLocation(event.getLocation()),
                 event.getPaid(),
                 event.getParticipantLimit(),
                 DateTimeUtils.formatToString(event.getPublishedOn()),
@@ -99,6 +102,15 @@ public class EventMapper {
         updatedEvent.setInitiator(oldEvent.getInitiator());
         updatedEvent.setViews(oldEvent.getViews());
         updatedEvent.setState(newState);
+        if (update.getLocation() != null) {
+            updatedEvent.setLocation(
+                    new LocationEntity(
+                    oldEvent.getLocation().getId(),
+                    update.getLocation().getLat(),
+                    update.getLocation().getLon()));
+        } else {
+            updatedEvent.setLocation(oldEvent.getLocation());
+        }
         if (update.getParticipantLimit() != null) {
             updatedEvent.setParticipantLimit(update.getParticipantLimit());
         } else {

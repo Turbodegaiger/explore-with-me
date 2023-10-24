@@ -19,7 +19,7 @@ public interface PublicService {
 
     ResponseEntity<CategoryDto> getCategoryById(Long catId);
 
-    ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto searchDto);
+    ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto searchDto, HttpServletRequest request);
 
     ResponseEntity<EventFullDto> getEventById(Long eventId, HttpServletRequest request);
 }

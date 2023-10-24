@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.dto.category.CategoryDto;
+import ru.practicum.dto.location.Location;
 import ru.practicum.dto.user.UserShortDto;
 
 @Data
@@ -18,6 +19,7 @@ public class EventFullDto {
     String eventDate;
     Long id;
     UserShortDto initiator;
+    Location location;
     Boolean paid;
     Integer participantLimit;
     String publishedOn;

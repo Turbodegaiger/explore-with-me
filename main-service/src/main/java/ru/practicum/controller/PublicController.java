@@ -67,11 +67,12 @@ public class PublicController {
             @RequestParam(required = false, defaultValue = "false") Boolean onlyAvailable,
             @RequestParam(required = false, defaultValue = "") String sort,
             @RequestParam(required = false, defaultValue = "0") Integer from,
-            @RequestParam(required = false, defaultValue = "10") Integer size) {
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            HttpServletRequest request) {
         EventsPublicSearchDto searchDto = new EventsPublicSearchDto(
                 text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
         log.info("Принят public запрос на получение событий, from = {}, size = {}.", from, size);
-        return service.getEvents(searchDto);
+        return service.getEvents(searchDto, request);
     }
 
     @GetMapping("/events/{eventId}")
