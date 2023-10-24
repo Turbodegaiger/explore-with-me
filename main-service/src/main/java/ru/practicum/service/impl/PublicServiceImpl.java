@@ -9,19 +9,22 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.MainServiceClient;
+import ru.practicum.dto.EndpointHit;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDto;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventsPublicSearchDto;
 import ru.practicum.enums.event.EventSort;
 import ru.practicum.enums.event.EventState;
-import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.model.Category;
 import ru.practicum.model.Compilation;
+import ru.practicum.model.Event;
 import ru.practicum.model.QEvent;
 import ru.practicum.repository.CategoryRepository;
 import ru.practicum.repository.CompilationRepository;
@@ -29,6 +32,7 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.service.PublicService;
 import ru.practicum.util.DateTimeUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,6 +40,8 @@ import java.util.Optional;
 @Slf4j
 @RequiredArgsConstructor
 public class PublicServiceImpl implements PublicService {
+    @Autowired
+    MainServiceClient client;
     @Autowired
     private final CategoryRepository categoryRepository;
     @Autowired
@@ -46,7 +52,7 @@ public class PublicServiceImpl implements PublicService {
     @Override
     public ResponseEntity<List<CompilationDto>> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageParams = PageRequest.of(
-                fromToPage(from, size), size, Sort.by(Sort.DEFAULT_DIRECTION, "title"));
+                from > 0 ? from / size : 0, size, Sort.by(Sort.DEFAULT_DIRECTION, "title"));
         List<CompilationDto> compilationDtoList = CompilationMapper.mapCompilationToCompilationDtoList(
                 compRepository.findAllByPinned(pinned, pageParams));
         log.info("Успешно выгружены подборки по параметрам " +
@@ -70,7 +76,7 @@ public class PublicServiceImpl implements PublicService {
     @Override
     public ResponseEntity<List<CategoryDto>> getCategories(Integer from, Integer size) {
         Pageable pageParams = PageRequest.of(
-                fromToPage(from, size), size, Sort.by(Sort.DEFAULT_DIRECTION, "name"));
+                from > 0 ? from / size : 0, size, Sort.by(Sort.DEFAULT_DIRECTION, "name"));
         List<CategoryDto> categoryDtoList = CategoryMapper.mapCategoryToCategoryDtoList(
                 categoryRepository.findAll(pageParams));
         log.info("Успешно выгружены категории по параметрам " +
@@ -96,6 +102,11 @@ public class PublicServiceImpl implements PublicService {
         QEvent event = QEvent.event;
         BooleanBuilder builderTotal = new BooleanBuilder();
         builderTotal.and(event.state.eq(EventState.PUBLISHED));
+        if (s.getOnlyAvailable()) {
+            builderTotal.and(event.available.eq(false));
+        } else {
+            builderTotal.and(event.available.eq(true));
+        }
         if (!s.getText().isEmpty()) {
             String text = s.getText().toLowerCase();
             BooleanBuilder builder = new BooleanBuilder();
@@ -121,7 +132,6 @@ public class PublicServiceImpl implements PublicService {
         if (!s.getRangeEnd().isEmpty()) {
             builderTotal.and(event.eventDate.before(DateTimeUtils.formatToLocalDT(s.getRangeEnd())));
         }
-        builderTotal.and(event.available.eq(s.getOnlyAvailable()));
         String sortBy = "createdOn";
         if (s.getSort() != null) {
             if (s.getSort() == EventSort.EVENT_DATE) {
@@ -132,25 +142,41 @@ public class PublicServiceImpl implements PublicService {
             }
         }
         Pageable pageParams = PageRequest.of(
-                fromToPage(s.getFrom(), s.getSize()), s.getSize(), Sort.by(Sort.Direction.DESC, sortBy));
+                s.getFrom() > 0 ? s.getFrom() / s.getSize() : 0, s.getSize(), Sort.by(Sort.Direction.DESC, sortBy));
         List<EventShortDto> foundEvents = EventMapper.mapEventToEventShortDtoList(eventRepository.findAll(builderTotal, pageParams));
-        log.info("Успешно выгружены события по параметрам: {}. Value: {}", s, foundEvents);
+        log.info("Успешно выгружены события по параметрам: {}. Values: {}", s, foundEvents);
         return ResponseEntity.of(Optional.of(foundEvents));
     }
 
     @Override
-    public ResponseEntity<Object> getEventById(Long id) {
-        return null;
-    }
-
-    private int fromToPage(int from, int size) {
-        if (from < 0 || size <= 0) {
-            log.info("Переданы некорректные параметры from {} или size {}, проверьте правильность запроса.", from, size);
-            throw new IncorrectRequestException(String.format(
-                    "Incorrect parameters: from OR/AND size. They must be positive numbers. from = %s, size = %s.", from, size));
+    public ResponseEntity<EventFullDto> getEventById(Long eventId, HttpServletRequest request) {
+        saveEndpointHit(request);
+        Optional<Event> event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED);
+        if (event.isEmpty()) {
+            log.info("Событие с id={} не найдено или недоступно.", eventId);
+            throw new NotFoundException(
+                    String.format("Event with id=%s is not found or not available, check request.", eventId));
         }
-        float result = (float) from / size;
-        return (int) Math.ceil(result);
+        updateViews(eventId);
+        EventFullDto fullDto = EventMapper.mapEventToEventFullDto(event.get());
+        log.info("Успешно выгружено событие id={}. Value: {}", eventId, fullDto);
+        return ResponseEntity.of(Optional.of(fullDto));
     }
 
+    private void saveEndpointHit(HttpServletRequest request) {
+        EndpointHit hit = new EndpointHit(
+                0,
+                "ewm-main-service",
+                request.getRequestURI(),
+                request.getRemoteAddr(),
+                DateTimeUtils.formatToString(DateTimeUtils.getCurrentTime()));
+        client.saveHit(hit);
+        log.info("Сохранение обращение по эндпоинту: {}.", hit);
+    }
+
+    private void updateViews(Long eventId) {
+        Optional<Event> event = eventRepository.findById(eventId);
+        event.get().setViews(event.get().getViews() + 1);
+        eventRepository.save(event.get());
+    }
 }

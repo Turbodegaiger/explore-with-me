@@ -12,6 +12,7 @@ import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
 
 import java.util.List;
+
 public interface AdminService {
     ResponseEntity<CategoryDto> createCategory(NewCategoryDto categoryDto);
 

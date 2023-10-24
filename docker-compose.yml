@@ -38,8 +38,8 @@ services:
       - POSTGRES_USER=tbdggr
 
   ewm-service:
-    build: ewm-service
-    image: ewm-service-service
+    build: main-service
+    image: ewm-service-image
     container_name: ewm-service-container
     ports:
       - "8080:8080"
@@ -47,8 +47,8 @@ services:
       - stats-client
       - ewm-db
     environment:
-      - STATS_SERVER_URL=http://stats-server::9080
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:8090/ewm
+      - STATS_CLIENT_URL=http://stats-client:9090
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm
       - SPRING_DATASOURCE_USERNAME=tbdggr
       - SPRING_DATASOURCE_PASSWORD=151142
       - SPRING_DRIVER_CLASS_NAME=org.postgresql.Driver

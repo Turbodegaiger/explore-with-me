@@ -13,15 +13,12 @@ import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.compilation.NewCompilationDto;
 import ru.practicum.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.EventsAdminSearchDto;
 import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.AdminService;
-import ru.practicum.service.impl.AdminServiceImpl;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @RestController
@@ -34,7 +31,7 @@ public class AdminController {
     private final AdminService service;
 
     @PostMapping("/categories")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(code = HttpStatus.CREATED)
     public ResponseEntity<CategoryDto> createCategory(@RequestBody @Valid NewCategoryDto newCategoryDto) {
         log.info("Принят admin запрос на создание категории: {}", newCategoryDto);
         return service.createCategory(newCategoryDto);
@@ -88,7 +85,7 @@ public class AdminController {
     }
 
     @PostMapping("/users")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(value = HttpStatus.CREATED)
     public ResponseEntity<UserDto> createUser(@RequestBody @Valid NewUserRequest newUserRequest) {
         log.info("Принят admin запрос на создание пользователя: {}", newUserRequest);
         return service.createUser(newUserRequest);

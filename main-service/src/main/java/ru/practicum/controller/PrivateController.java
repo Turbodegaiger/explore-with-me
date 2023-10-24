@@ -97,8 +97,8 @@ public class PrivateController {
     @PatchMapping("/{userId}/requests/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(@PathVariable Long userId,
-                                                                        @PathVariable Long eventId) {
-        log.info("Принят private запрос на отмену запроса на участие в событии id = {} пользователем id = {}.", eventId, userId);
-        return service.cancelRequestToEvent(userId, eventId);
+                                                                        @PathVariable Long requestId) {
+        log.info("Принят private запрос на отмену запроса на участие в событии id = {} пользователем id = {}.", requestId, userId);
+        return service.cancelRequestToEvent(userId, requestId);
     }
 }

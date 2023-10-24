@@ -9,10 +9,12 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDto;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventsPublicSearchDto;
 import ru.practicum.service.PublicService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -72,10 +74,10 @@ public class PublicController {
         return service.getEvents(searchDto);
     }
 
-    @GetMapping("/events/{id}")
+    @GetMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<Object> getEventById(@PathVariable Long id) {
-        log.info("Принят public запрос на получение события с id = {}.", id);
-        return service.getEventById(id);
+    public ResponseEntity<EventFullDto> getEventById(@PathVariable Long eventId, HttpServletRequest request) {
+        log.info("Принят public запрос на получение события с id = {}.", eventId);
+        return service.getEventById(eventId, request);
     }
 }

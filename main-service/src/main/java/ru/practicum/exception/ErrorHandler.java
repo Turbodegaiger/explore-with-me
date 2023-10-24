@@ -57,7 +57,7 @@ public class ErrorHandler {
         log.info("Прислан некорректный запрос, проверьте аргументы, тело, типы присылаемых данных. {}", exception.getMessage());
         String reason = "Incorrectly made request.";
         List<ObjectError> errors = exception.getAllErrors();
-        return new ApiError(errors, exception.getLocalizedMessage(), reason, HttpStatus.CONFLICT);
+        return new ApiError(errors.get(0).toString(), reason, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(value = {
@@ -84,7 +84,7 @@ public class ErrorHandler {
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleDatabaseDataConflict(final org.springframework.dao.DataIntegrityViolationException exception) {
-        log.info("Произошла ошибка, не выполнены условия для загрузки в базу данных (constraints).");
+        log.info("Произошла ошибка, не выполнены условия для загрузки в базу данных (constraints). {}", exception.getClass());
         String reason = "For the requested operation the conditions are not met.";
         return new ApiError(exception.getCause().getCause().getMessage(), reason, HttpStatus.CONFLICT);
     }

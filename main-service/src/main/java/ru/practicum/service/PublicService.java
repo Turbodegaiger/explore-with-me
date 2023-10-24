@@ -3,9 +3,11 @@ package ru.practicum.service;
 import org.springframework.http.ResponseEntity;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDto;
+import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventsPublicSearchDto;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 public interface PublicService {
@@ -19,5 +21,5 @@ public interface PublicService {
 
     ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto searchDto);
 
-    ResponseEntity<Object> getEventById(Long id);
+    ResponseEntity<EventFullDto> getEventById(Long eventId, HttpServletRequest request);
 }

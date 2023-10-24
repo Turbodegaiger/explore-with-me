@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,6 @@ import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.exception.DataConflictException;
-import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.mapper.CompilationMapper;
@@ -34,7 +34,7 @@ import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.UserRepository;
 import ru.practicum.service.AdminService;
 import ru.practicum.util.DateTimeUtils;
-import ru.practicum.validator.ValidatorForEvent;
+import ru.practicum.util.UpdateHelper;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,7 +59,7 @@ public class AdminServiceImpl implements AdminService {
         Category category = categoryRepository.save(CategoryMapper.mapNewCategoryDtoToCategory(newCategoryDto));
         CategoryDto categoryDto = CategoryMapper.mapCategoryToCategoryDto(category);
         log.info("Успешно создана новая категория: {}", categoryDto);
-        return ResponseEntity.of(Optional.of(categoryDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(categoryDto);
     }
 
     @Override
@@ -82,8 +82,14 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public ResponseEntity<CategoryDto> updateCategory(CategoryDto update, Long catId) {
-        Category category = categoryRepository.save(CategoryMapper.mapCategoryDtoToCategory(update, catId));
-        CategoryDto updatedCategoryDto = CategoryMapper.mapCategoryToCategoryDto(category);
+        Optional<Category> category = categoryRepository.findById(catId);
+        if (category.isEmpty()) {
+            log.info("Категории с id={} не существует.", catId);
+            throw new NotFoundException(
+                    String.format("Category with id=%s was not found.", catId));
+        }
+        Category updatedCategory = categoryRepository.save(CategoryMapper.mapCategoryDtoToCategory(update, catId));
+        CategoryDto updatedCategoryDto = CategoryMapper.mapCategoryToCategoryDto(updatedCategory);
         log.info("Успешно обновлена категория: {}", updatedCategoryDto);
         return ResponseEntity.of(Optional.of(updatedCategoryDto));
     }
@@ -98,7 +104,7 @@ public class AdminServiceImpl implements AdminService {
                                                   Integer from,
                                                   Integer size) {
         Pageable pageParams = PageRequest.of(
-                fromToPage(from, size), size, Sort.by(Sort.Direction.DESC, "createdOn"));
+                from > 0 ? from / size : 0, size, Sort.by(Sort.Direction.DESC, "createdOn"));
         QEvent event = QEvent.event;
         BooleanBuilder builderTotal = new BooleanBuilder();
         if (!users.isEmpty()) {
@@ -142,11 +148,11 @@ public class AdminServiceImpl implements AdminService {
             throw new NotFoundException(
                     String.format("Event with id=%s was not found.", eventId));
         }
-        EventState newState = ValidatorForEvent.validateStateForAdminUpdate(update, oldEvent.get());
-        LocalDateTime newDateTime = ValidatorForEvent.validateEventDateForUpdate(update, oldEvent.get());
+        EventState newState = UpdateHelper.getStateForAdminUpdate(update, oldEvent.get());
+        LocalDateTime newDateTime = UpdateHelper.getEventDateForUpdate(update, oldEvent.get());
         Category newCategory = oldEvent.get().getCategory();
         if (update.getCategory() != null
-                && oldEvent.get().getCategory().getId() != update.getCategory()) {
+                && oldEvent.get().getCategory().getId().equals(update.getCategory())) {
             Optional<Category> updatedCategory = categoryRepository.findById(update.getCategory());
             if (updatedCategory.isEmpty()) {
                 log.info("Категории с id={} не существует.", update.getCategory());
@@ -164,7 +170,7 @@ public class AdminServiceImpl implements AdminService {
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<List<UserDto>> getUsers(List<Long> ids, Integer from, Integer size) {
-        Pageable pageParams = PageRequest.of(fromToPage(from, size), size, Sort.by(Sort.Direction.ASC, "id"));
+        Pageable pageParams = PageRequest.of(from > 0 ? from / size : 0, size, Sort.by(Sort.Direction.ASC, "id"));
         List<UserDto> userDtoList;
         if (ids.isEmpty()) {
             userDtoList = UserMapper.mapUsersToUserDtoList(userRepository.findAll(pageParams));
@@ -180,7 +186,7 @@ public class AdminServiceImpl implements AdminService {
         User newUser = userRepository.save(UserMapper.mapNewUserRequestToUser(newUserRequest));
         UserDto userDto = UserMapper.mapUserToUserDto(newUser);
         log.info("Успешно создан новый пользователь: {}", userDto);
-        return ResponseEntity.of(Optional.of(userDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
     }
 
     @Override
@@ -201,7 +207,7 @@ public class AdminServiceImpl implements AdminService {
         Compilation newComp = CompilationMapper.mapNewCompilationDtoToCompilation(newCompilationDto, events);
         CompilationDto compilation = CompilationMapper.mapCompilationToCompilationDto(compRepository.save(newComp));
         log.info("Успешно создана новая подборка: {}", compilation);
-        return ResponseEntity.of(Optional.of(compilation));
+        return ResponseEntity.status(HttpStatus.CREATED).body(compilation);
     }
 
     @Override
@@ -234,15 +240,5 @@ public class AdminServiceImpl implements AdminService {
         CompilationDto updatedCompilationDto = CompilationMapper.mapCompilationToCompilationDto(compRepository.save(updatedCompilation));
         log.info("Успешно обновлена подборка: {}", updatedCompilationDto);
         return ResponseEntity.of(Optional.of(updatedCompilationDto));
-    }
-
-    private int fromToPage(int from, int size) {
-        if (from < 0 || size <= 0) {
-            log.info("Переданы некорректные параметры from {} или size {}, проверьте правильность запроса.", from, size);
-            throw new IncorrectRequestException(String.format(
-                    "Incorrect parameters: from OR/AND size. They must be positive numbers. from = %s, size = %s.", from, size));
-        }
-        float result = (float) from / size;
-        return (int) Math.ceil(result);
     }
 }
