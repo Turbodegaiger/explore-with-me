@@ -1,9 +1,7 @@
 package ru.practicum.util;
 
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.dto.event.UpdateEventAdminRequest;
 import ru.practicum.dto.event.UpdateEventRequest;
-import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.enums.event.EventAdminStateAction;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.enums.event.EventUserStateAction;
@@ -15,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Slf4j
 public class UpdateHelper {
-    public static EventState getStateForAdminUpdate(UpdateEventAdminRequest update, Event oldEvent) {
+    public static EventState getStateForAdminUpdate(UpdateEventRequest update, Event oldEvent) {
         EventState newState = oldEvent.getState();
         if (update.getStateAction() != null
                 && EventAdminStateAction.valueOf(update.getStateAction()).equals(EventAdminStateAction.PUBLISH_EVENT)) {
@@ -48,7 +46,7 @@ public class UpdateHelper {
         return newState;
     }
 
-    public static EventState getStateForUserUpdate(UpdateEventUserRequest update, Event oldEvent, EventState newState) {
+    public static EventState getStateForUserUpdate(UpdateEventRequest update, Event oldEvent, EventState newState) {
         if (update.getStateAction() == null) {
             return newState;
         }
@@ -78,13 +76,13 @@ public class UpdateHelper {
                                 update.getEventDate(), oldEvent.getPublishedOn()));
             } else {
                 if (DateTimeUtils.formatToLocalDT(update.getEventDate())
-                        .isAfter(DateTimeUtils.getCurrentTime().plusHours(2))) {
+                        .isBefore(DateTimeUtils.getCurrentTime().plusHours(2))) {
                     log.info("Дата начала события должна быть не ранее чем через два часа от текущего времени. " +
                             "new eventDate={}, current time={}.", update.getEventDate(), DateTimeUtils.getCurrentTime());
                     throw new ValidationException(
                             String.format("Cannot change the event date because event date should be " +
                                             "at least in two hours from current datetime. new eventDate=%s, current time=%s",
-                                    update.getEventDate(), DateTimeUtils.getCurrentTime()));
+                                    update.getEventDate(), DateTimeUtils.formatToString(DateTimeUtils.getCurrentTime())));
                 }
             }
             newDateTime = DateTimeUtils.formatToLocalDT(update.getEventDate());

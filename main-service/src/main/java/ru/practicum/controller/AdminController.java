@@ -13,7 +13,7 @@ import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.compilation.NewCompilationDto;
 import ru.practicum.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.UpdateEventAdminRequest;
+import ru.practicum.dto.event.UpdateEventRequest;
 import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.service.AdminService;
@@ -69,7 +69,7 @@ public class AdminController {
 
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<EventFullDto> updateEvent(@RequestBody @Valid UpdateEventAdminRequest update,
+    public ResponseEntity<EventFullDto> updateEvent(@RequestBody @Valid UpdateEventRequest update,
                                                     @PathVariable Long eventId) {
         log.info("Принят admin запрос на обновление события id {}, update = {}", eventId, update);
         return service.updateEvent(update, eventId);

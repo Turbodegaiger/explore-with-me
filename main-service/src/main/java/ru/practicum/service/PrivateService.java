@@ -1,10 +1,7 @@
 package ru.practicum.service;
 
 import org.springframework.http.ResponseEntity;
-import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.EventShortDto;
-import ru.practicum.dto.event.NewEventDto;
-import ru.practicum.dto.event.UpdateEventUserRequest;
+import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
@@ -18,7 +15,7 @@ public interface PrivateService {
 
     ResponseEntity<EventFullDto> getUserEvent(Long userId, Long eventId);
 
-    ResponseEntity<EventFullDto> updateUserEvent(Long userId, Long eventId, UpdateEventUserRequest update);
+    ResponseEntity<EventFullDto> updateUserEvent(Long userId, Long eventId, UpdateEventRequest update);
 
     ResponseEntity<List<ParticipationRequestDto>> getRequestsToEvent(Long userId, Long eventId);
 

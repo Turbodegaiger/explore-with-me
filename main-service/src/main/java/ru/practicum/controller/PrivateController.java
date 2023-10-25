@@ -7,10 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.EventShortDto;
-import ru.practicum.dto.event.NewEventDto;
-import ru.practicum.dto.event.UpdateEventUserRequest;
+import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
@@ -57,7 +54,7 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<EventFullDto> updateUserEvent(@PathVariable Long userId,
                                                         @PathVariable Long eventId,
-                                                        @RequestBody UpdateEventUserRequest update) {
+                                                        @RequestBody UpdateEventRequest update) {
         log.info("Принят private запрос на обновление события id = {} пользователем id = {}: {}.", eventId, userId, update);
         return service.updateUserEvent(userId, eventId, update);
     }

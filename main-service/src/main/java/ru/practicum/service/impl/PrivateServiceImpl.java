@@ -111,7 +111,7 @@ public class PrivateServiceImpl implements PrivateService {
 
     @Override
     @Transactional
-    public ResponseEntity<EventFullDto> updateUserEvent(Long userId, Long eventId, UpdateEventUserRequest update) {
+    public ResponseEntity<EventFullDto> updateUserEvent(Long userId, Long eventId, UpdateEventRequest update) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isEmpty()) {
             log.info("Не найден пользователь с id={}.", userId);
@@ -128,7 +128,7 @@ public class PrivateServiceImpl implements PrivateService {
         if (oldState.equals(EventState.PUBLISHED)) {
             log.info("Невозможно изменить событие id={}, оно должно иметь статус PENDING или CANCELED. " +
                     "Текущий статус: {}", eventId, oldState);
-            throw new ValidationException(
+            throw new DataConflictException(
                     String.format("Cannot update event id=%s, it must have state PENDING or CANCELED. " +
                             "Current state is: %s.", eventId, oldState));
         }

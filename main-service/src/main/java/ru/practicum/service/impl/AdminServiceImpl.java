@@ -17,7 +17,7 @@ import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.compilation.NewCompilationDto;
 import ru.practicum.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.dto.event.EventFullDto;
-import ru.practicum.dto.event.UpdateEventAdminRequest;
+import ru.practicum.dto.event.UpdateEventRequest;
 import ru.practicum.dto.user.NewUserRequest;
 import ru.practicum.dto.user.UserDto;
 import ru.practicum.enums.event.EventState;
@@ -141,7 +141,7 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public ResponseEntity<EventFullDto> updateEvent(UpdateEventAdminRequest update, Long eventId) {
+    public ResponseEntity<EventFullDto> updateEvent(UpdateEventRequest update, Long eventId) {
         Optional<Event> oldEvent = eventRepository.findById(eventId);
         if (oldEvent.isEmpty()) {
             log.info("События с id={} не существует.", eventId);
