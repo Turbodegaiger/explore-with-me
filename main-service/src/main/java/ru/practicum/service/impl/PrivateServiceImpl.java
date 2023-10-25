@@ -327,13 +327,15 @@ public class PrivateServiceImpl implements PrivateService {
         if (request.get().getStatus() == RequestStatus.CONFIRMED) {
             event.get().setConfirmedRequests(event.get().getConfirmedRequests() - 1);
             eventRepository.save(event.get());
-            updateIsEventAvailable(eventId, true);
+            if (!event.get().getAvailable()) {
+                updateIsEventAvailable(eventId, true);
+            }
             request.get().setStatus(RequestStatus.CANCELED);
         }
         ParticipationRequestDto canceledRequestDto =
                 RequestMapper.mapRequestToRequestDto(requestRepository.save(request.get()));
-        log.info("Успешно отменён запрос на участие в событии id={} от пользователя id={}: {}.",
-                eventId, userId, canceledRequestDto);
+        log.info("Успешно отменён запрос на участие id={} от пользователя id={}: {}.",
+                requestId, userId, canceledRequestDto);
         return ResponseEntity.of(Optional.of(canceledRequestDto));
     }
 

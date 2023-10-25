@@ -95,7 +95,7 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(@PathVariable Long userId,
                                                                         @PathVariable Long requestId) {
-        log.info("Принят private запрос на отмену запроса на участие в событии id = {} пользователем id = {}.", requestId, userId);
+        log.info("Принят private запрос на отмену запроса на участие id = {} пользователем id = {}.", requestId, userId);
         return service.cancelRequestToEvent(userId, requestId);
     }
 }

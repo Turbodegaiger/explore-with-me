@@ -27,5 +27,5 @@ public interface PrivateService {
 
     ResponseEntity<ParticipationRequestDto> createRequestToEvent(Long userId, Long eventId);
 
-    ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(Long userId, Long eventId);
+    ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(Long userId, Long requestId);
 }
