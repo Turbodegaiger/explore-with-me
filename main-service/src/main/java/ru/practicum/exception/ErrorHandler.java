@@ -84,11 +84,11 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleDatabaseDataConflict(final org.springframework.dao.DataIntegrityViolationException exception) {
         log.info("Произошла ошибка, не выполнены условия для загрузки в базу данных (constraints). {}", exception.getClass());
-        String reason = "For the requested operation the conditions are not met.";
-        return new ApiError(exception.getCause().getCause().getMessage(), reason, HttpStatus.CONFLICT);
+        String reason = "Incorrectly made request.";
+        return new ApiError(exception.getCause().getCause().getMessage(), reason, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler

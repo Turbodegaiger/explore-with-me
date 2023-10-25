@@ -6,6 +6,7 @@ import ru.practicum.enums.event.EventAdminStateAction;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.enums.event.EventUserStateAction;
 import ru.practicum.exception.DataConflictException;
+import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.Event;
 
@@ -70,7 +71,7 @@ public class UpdateHelper {
                     && oldEvent.getPublishedOn().isAfter(DateTimeUtils.formatToLocalDT(update.getEventDate()).minusHours(1))) {
                 log.info("Дата начала изменяемого события должна быть не ранее чем за час от даты публикации. " +
                         "new eventDate={}, publishedOn={}.", update.getEventDate(), oldEvent.getPublishedOn());
-                throw new ValidationException(
+                throw new IncorrectRequestException(
                         String.format("Cannot change the event date because publishing datetime should be " +
                                         "at least in one hour from event date. new eventDate=%s, publishedOn=%s",
                                 update.getEventDate(), oldEvent.getPublishedOn()));
@@ -79,7 +80,7 @@ public class UpdateHelper {
                         .isBefore(DateTimeUtils.getCurrentTime().plusHours(2))) {
                     log.info("Дата начала события должна быть не ранее чем через два часа от текущего времени. " +
                             "new eventDate={}, current time={}.", update.getEventDate(), DateTimeUtils.getCurrentTime());
-                    throw new ValidationException(
+                    throw new IncorrectRequestException(
                             String.format("Cannot change the event date because event date should be " +
                                             "at least in two hours from current datetime. new eventDate=%s, current time=%s",
                                     update.getEventDate(), DateTimeUtils.formatToString(DateTimeUtils.getCurrentTime())));

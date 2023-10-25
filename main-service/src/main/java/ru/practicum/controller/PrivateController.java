@@ -54,7 +54,7 @@ public class PrivateController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<EventFullDto> updateUserEvent(@PathVariable Long userId,
                                                         @PathVariable Long eventId,
-                                                        @RequestBody UpdateEventRequest update) {
+                                                        @RequestBody @Valid UpdateEventRequest update) {
         log.info("Принят private запрос на обновление события id = {} пользователем id = {}: {}.", eventId, userId, update);
         return service.updateUserEvent(userId, eventId, update);
     }
