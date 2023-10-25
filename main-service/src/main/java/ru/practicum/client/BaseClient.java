@@ -17,6 +17,10 @@ public class BaseClient {
         return makeAndSendRequest(HttpMethod.POST, path, body, MediaType.APPLICATION_JSON);
     }
 
+    protected <T> ResponseEntity<Object> get(String path) {
+        return makeAndSendRequest(HttpMethod.GET, path, null, MediaType.APPLICATION_FORM_URLENCODED);
+    }
+
     private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path, T body, MediaType mediaType) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders(mediaType));
         ResponseEntity<Object> statsServerResponse;

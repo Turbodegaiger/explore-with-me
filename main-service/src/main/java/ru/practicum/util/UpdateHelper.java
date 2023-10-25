@@ -7,6 +7,7 @@ import ru.practicum.dto.event.UpdateEventUserRequest;
 import ru.practicum.enums.event.EventAdminStateAction;
 import ru.practicum.enums.event.EventState;
 import ru.practicum.enums.event.EventUserStateAction;
+import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.model.Event;
 
@@ -21,7 +22,7 @@ public class UpdateHelper {
             if (!oldEvent.getState().equals(EventState.PENDING)) {
                 log.info("Cобытие можно публиковать, только если оно в состоянии ожидания публикации. " +
                         "Текущий event state={}.", oldEvent.getState());
-                throw new ValidationException(String.format("Cannot publish the event because event state should be " +
+                throw new DataConflictException(String.format("Cannot publish the event because event state should be " +
                         " PENDING. Current state is: %s.", oldEvent.getState()));
             }
             if (oldEvent.getEventDate()
@@ -38,8 +39,8 @@ public class UpdateHelper {
                 if (oldEvent.getState().equals(EventState.PUBLISHED)) {
                     log.info("Cобытие можно отклонить, только если оно ещё не опубликовано. " +
                             "Текущий event state={}.", oldEvent.getState());
-                    throw new ValidationException(String.format("Cannot reject the event because event state should be " +
-                            " not PUBLISHED. Current state is: %s.", oldEvent.getState()));
+                    throw new DataConflictException(String.format("Cannot reject the event because event state should be " +
+                            "not PUBLISHED. Current state is: %s.", oldEvent.getState()));
                 }
                 newState = EventState.CANCELED;
             }
@@ -54,7 +55,7 @@ public class UpdateHelper {
         if (!oldEvent.getState().equals(EventState.PENDING) && !oldEvent.getState().equals(EventState.CANCELED)) {
             log.info("Cобытие можно изменить, только если оно в состоянии ожидания публикации или отменено. " +
                     "Текущий event state={}.", oldEvent.getState());
-            throw new ValidationException(String.format("Cannot update event because event state should be " +
+            throw new DataConflictException(String.format("Cannot update event because event state should be " +
                     " PENDING or CANCELED. Current state is: %s.", oldEvent.getState()));
         } else if (EventUserStateAction.valueOf(update.getStateAction()).equals(EventUserStateAction.CANCEL_REVIEW)) {
             newState = EventState.CANCELED;
@@ -77,7 +78,7 @@ public class UpdateHelper {
                                 update.getEventDate(), oldEvent.getPublishedOn()));
             } else {
                 if (DateTimeUtils.formatToLocalDT(update.getEventDate())
-                        .isAfter(DateTimeUtils.getCurrentTime().minusHours(2))) {
+                        .isAfter(DateTimeUtils.getCurrentTime().plusHours(2))) {
                     log.info("Дата начала события должна быть не ранее чем через два часа от текущего времени. " +
                             "new eventDate={}, current time={}.", update.getEventDate(), DateTimeUtils.getCurrentTime());
                     throw new ValidationException(

@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.client.MainServiceClient;
 import ru.practicum.dto.EndpointHit;
+import ru.practicum.dto.ViewStats;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.dto.compilation.CompilationDto;
 import ru.practicum.dto.event.EventFullDto;
@@ -18,10 +19,12 @@ import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.EventsPublicSearchDto;
 import ru.practicum.enums.event.EventSort;
 import ru.practicum.enums.event.EventState;
+import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.mapper.EventMapper;
+import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.Category;
 import ru.practicum.model.Compilation;
 import ru.practicum.model.Event;
@@ -33,8 +36,8 @@ import ru.practicum.service.PublicService;
 import ru.practicum.util.DateTimeUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -53,8 +56,13 @@ public class PublicServiceImpl implements PublicService {
     public ResponseEntity<List<CompilationDto>> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable pageParams = PageRequest.of(
                 from > 0 ? from / size : 0, size, Sort.by(Sort.DEFAULT_DIRECTION, "title"));
-        List<CompilationDto> compilationDtoList = CompilationMapper.mapCompilationToCompilationDtoList(
-                compRepository.findAllByPinned(pinned, pageParams));
+        Iterable<Compilation> compilations;
+        if (pinned == null) {
+            compilations = compRepository.findAll(pageParams);
+        } else {
+            compilations = compRepository.findAllByPinned(pinned, pageParams);
+        }
+        List<CompilationDto> compilationDtoList = CompilationMapper.mapCompilationToCompilationDtoList(compilations);
         log.info("Успешно выгружены подборки по параметрам " +
                 "pinned={}, from={}, size={}. Value: {}", pinned, from, size, compilationDtoList);
         return ResponseEntity.of(Optional.of(compilationDtoList));
@@ -131,7 +139,16 @@ public class PublicServiceImpl implements PublicService {
             builderTotal.and(event.eventDate.after(DateTimeUtils.getCurrentTime()));
         }
         if (!s.getRangeEnd().isEmpty()) {
-            builderTotal.and(event.eventDate.before(DateTimeUtils.formatToLocalDT(s.getRangeEnd())));
+            LocalDateTime start = DateTimeUtils.formatToLocalDT(s.getRangeStart());
+            LocalDateTime end = DateTimeUtils.formatToLocalDT(s.getRangeEnd());
+            if (end.isAfter(start)) {
+                builderTotal.and(event.eventDate.before(DateTimeUtils.formatToLocalDT(s.getRangeEnd())));
+            } else {
+                log.info("Получен некорректный запрос: rangeEnd {} должен быть после rangeStart {}.",
+                        end, start);
+                throw new IncorrectRequestException(
+                        String.format("rangeEnd %s must be after rangeStart %s.", end, start));
+            }
         }
         String sortBy = "createdOn";
         if (s.getSort() != null) {
@@ -159,7 +176,7 @@ public class PublicServiceImpl implements PublicService {
             throw new NotFoundException(
                     String.format("Event with id=%s is not found or not available, check request.", eventId));
         }
-        updateViews(event.get());
+        updateViews(event.get(), request.getRequestURI());
         EventFullDto fullDto = EventMapper.mapEventToEventFullDto(event.get());
         log.info("Успешно выгружено событие id={}. Value: {}", eventId, fullDto);
         return ResponseEntity.of(Optional.of(fullDto));
@@ -176,8 +193,18 @@ public class PublicServiceImpl implements PublicService {
         log.info("Сохранение обращения по эндпоинту: {}.", hit);
     }
 
-    private void updateViews(Event event) {
-        event.setViews(event.getViews() + 1);
+    private void updateViews(Event event, String uri) {
+        ResponseEntity<Object> stats = client.getStats(
+                DateTimeUtils.formatToString(event.getCreatedOn()),
+                DateTimeUtils.formatToString(DateTimeUtils.getCurrentTime()),
+                List.of(uri),
+                true);
+        if (stats == null || stats.getBody() == null || !stats.getStatusCode().is2xxSuccessful()) {
+            log.info("Произошла ошибка при попытке получить данные из stats-server: {}", stats);
+            return;
+        }
+        ViewStats viewStats = ViewStatsMapper.mapStringToViewStats(stats.getBody().toString());
+        event.setViews(viewStats.getHits().longValue());
         eventRepository.save(event);
     }
 

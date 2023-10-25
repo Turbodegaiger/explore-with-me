@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,10 +83,10 @@ public class PrivateServiceImpl implements PrivateService {
                 new LocationEntity(0L, newEventDto.getLocation().getLat(), newEventDto.getLocation().getLon()));
         Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto, category.get(), initiator.get(), newLocation);
         Event createdEvent = eventRepository.save(newEvent);
-        Optional<EventFullDto> createdEventFullDto = Optional.of(
-                EventMapper.mapEventToEventFullDto(createdEvent));
+        EventFullDto createdEventFullDto = EventMapper.mapEventToEventFullDto(createdEvent);
         log.info("Успешно создано новое событие: {}", createdEventFullDto);
-        return ResponseEntity.of(createdEventFullDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEventFullDto);
+
     }
 
     @Override
@@ -198,12 +199,12 @@ public class PrivateServiceImpl implements PrivateService {
             if (canConfirmCount <= 0) {
                 changeStatusForRequests(requests, RequestStatus.REJECTED);
                 requestRepository.saveAll(requests);
-                changeIsEventAvailable(eventId, false);
+                updateIsEventAvailable(eventId, false);
                 log.info("Исчерпан лимит заявок на участие в событии id={}. Все заявки отклонены.", event.get().getId());
                 throw new DataConflictException(String.format(
                         "Request limit for event id=%s was reached. All requests are rejected.", event.get().getId()));
             } else {
-                changeIsEventAvailable(eventId, true);
+                updateIsEventAvailable(eventId, true);
                 if (requests.size() <= canConfirmCount) {
                     toConfirm = requests;
                 } else {
@@ -215,7 +216,7 @@ public class PrivateServiceImpl implements PrivateService {
                     }
                     changeStatusForRequests(toReject, RequestStatus.REJECTED);
                     requestRepository.saveAll(toReject);
-                    changeIsEventAvailable(eventId, false);
+                    updateIsEventAvailable(eventId, false);
                 }
                 changeStatusForRequests(toConfirm, RequestStatus.CONFIRMED);
                 updateResultDto = RequestMapper.mapRequestToStatusUpdateDto(requestRepository.saveAll(toConfirm), toReject);
@@ -280,11 +281,14 @@ public class PrivateServiceImpl implements PrivateService {
                     String.format("Cannot create request to unpublished event id=%s. " +
                             "Current state: %s", eventId, event.get().getState()));
         }
-        if (event.get().getConfirmedRequests() >= event.get().getParticipantLimit()) {
-            changeIsEventAvailable(eventId, false);
-            log.info("Невозможно создать запрос на участие в событии id={}, достигнут лимит участников. ", eventId);
+        if ((event.get().getConfirmedRequests() >= event.get().getParticipantLimit())
+                && event.get().getParticipantLimit() != 0) {
+            updateIsEventAvailable(eventId, false);
+            log.info("Невозможно создать запрос на участие в событии id={}, достигнут лимит ({}) участников. ",
+                    eventId, event.get().getParticipantLimit());
             throw new DataConflictException(
-                    String.format("Cannot create request to event id=%s, participant limit reached.", eventId));
+                    String.format("Cannot create request to event id=%s, participant limit (%s) reached.",
+                            eventId, event.get().getParticipantLimit()));
         }
         RequestStatus status = RequestStatus.PENDING;
         if (!event.get().getRequestModeration() || event.get().getParticipantLimit() == 0) {
@@ -295,8 +299,8 @@ public class PrivateServiceImpl implements PrivateService {
         if (requestDto.getStatus().equals(RequestStatus.CONFIRMED.toString())) {
             updateEventConfirmedRequests(eventId, 1L);
         }
-        log.info("Успешно создан запрос на участие в событии id={} пользователем id={}. {}", eventId, userId, requestDto);
-        return ResponseEntity.of(Optional.of(requestDto));
+        log.info("Успешно создан запрос на участие в событии id={} пользователем id={}: {}.", eventId, userId, requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(requestDto);
     }
 
     @Override
@@ -316,12 +320,12 @@ public class PrivateServiceImpl implements PrivateService {
         if (request.get().getStatus() == RequestStatus.CONFIRMED) {
             event.get().setConfirmedRequests(event.get().getConfirmedRequests() - 1);
             eventRepository.save(event.get());
+            updateIsEventAvailable(eventId, true);
+            request.get().setStatus(RequestStatus.PENDING);
         }
-        request.get().setStatus(RequestStatus.PENDING);
         ParticipationRequestDto canceledRequestDto =
                 RequestMapper.mapRequestToRequestDto(requestRepository.save(request.get()));
-
-        log.info("Успешно отменён запрос на участие в событии id={} от пользователя id={}: {}",
+        log.info("Успешно отменён запрос на участие в событии id={} от пользователя id={}: {}.",
                 eventId, userId, canceledRequestDto);
         return ResponseEntity.of(Optional.of(canceledRequestDto));
     }
@@ -332,7 +336,7 @@ public class PrivateServiceImpl implements PrivateService {
         eventRepository.save(event.get());
     }
 
-    private void changeIsEventAvailable(Long eventId, boolean isAvailable) {
+    private void updateIsEventAvailable(Long eventId, boolean isAvailable) {
         Optional<Event> event = eventRepository.findById(eventId);
         event.get().setAvailable(isAvailable);
         eventRepository.save(event.get());
@@ -342,8 +346,9 @@ public class PrivateServiceImpl implements PrivateService {
         for (Request r : requests) {
             if (r.getStatus() != RequestStatus.PENDING) {
                 log.info("Для изменения статуса запроса на участие id={} необходимо, чтобы он имел статус PENDING. " +
-                        "Текущий статус: {}", r.getId(), r.getStatus());
-                continue;
+                        "Текущий статус: {}.", r.getId(), r.getStatus());
+                throw new DataConflictException(String.format("Cannot change request id=%s state. " +
+                        "There is PENDING status needed. Current status is: %s.", r.getId(), r.getStatus()));
             }
             r.setStatus(status);
         }

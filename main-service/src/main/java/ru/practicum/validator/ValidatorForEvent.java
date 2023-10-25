@@ -2,6 +2,7 @@ package ru.practicum.validator;
 
 import lombok.extern.slf4j.Slf4j;
 import ru.practicum.dto.event.NewEventDto;
+import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.util.DateTimeUtils;
 
@@ -15,7 +16,7 @@ public class ValidatorForEvent {
             if (DateTimeUtils.formatToLocalDT(event.getEventDate())
                     .isBefore(DateTimeUtils.getCurrentTime().plusHours(2))) {
                 log.info("{} не прошёл валидацию по полю eventDate: {}.", event.getClass(), event.getEventDate());
-                throw new ValidationException(
+                throw new IncorrectRequestException(
                         "Field: eventDate. Error: must be at least 2 hours after current time. Value: " + event.getEventDate());
             }
         } catch (DateTimeParseException exception) {
