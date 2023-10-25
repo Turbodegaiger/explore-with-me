@@ -112,15 +112,13 @@ public class PublicServiceImpl implements PublicService {
         BooleanBuilder builderTotal = new BooleanBuilder();
         builderTotal.and(event.state.eq(EventState.PUBLISHED));
         if (s.getOnlyAvailable()) {
-            builderTotal.and(event.available.eq(false));
-        } else {
             builderTotal.and(event.available.eq(true));
         }
         if (!s.getText().isEmpty()) {
             String text = s.getText().toLowerCase();
             BooleanBuilder builder = new BooleanBuilder();
-            builder.or(event.annotation.contains(text));
-            builder.or(event.description.contains(text));
+            builder.or(event.annotation.containsIgnoreCase(text));
+            builder.or(event.description.containsIgnoreCase(text));
             builderTotal.and(builder);
         }
         if (!s.getCategories().isEmpty()) {
