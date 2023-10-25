@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventMapper {
-    public static Event mapNewEventDtoToEvent(NewEventDto newEventDto, Category category, User initiator) {
+    public static Event mapNewEventDtoToEvent(NewEventDto newEventDto, Category category, User initiator, LocationEntity location) {
         return new Event(
                 0L,
                 newEventDto.getAnnotation(),
@@ -27,7 +27,7 @@ public class EventMapper {
                 newEventDto.getPaid(),
                 true,
                 initiator,
-                new LocationEntity(0L, newEventDto.getLocation().getLat(), newEventDto.getLocation().getLon()),
+                location,
                 0L,
                 EventState.PENDING,
                 newEventDto.getParticipantLimit(),

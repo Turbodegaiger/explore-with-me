@@ -18,14 +18,8 @@ import ru.practicum.enums.request.RequestStatus;
 import ru.practicum.exception.*;
 import ru.practicum.mapper.EventMapper;
 import ru.practicum.mapper.RequestMapper;
-import ru.practicum.model.Category;
-import ru.practicum.model.Event;
-import ru.practicum.model.Request;
-import ru.practicum.model.User;
-import ru.practicum.repository.CategoryRepository;
-import ru.practicum.repository.EventRepository;
-import ru.practicum.repository.RequestRepository;
-import ru.practicum.repository.UserRepository;
+import ru.practicum.model.*;
+import ru.practicum.repository.*;
 import ru.practicum.service.PrivateService;
 import ru.practicum.util.DateTimeUtils;
 import ru.practicum.util.UpdateHelper;
@@ -48,6 +42,8 @@ public class PrivateServiceImpl implements PrivateService {
     private final CategoryRepository categoryRepository;
     @Autowired
     private final RequestRepository requestRepository;
+    @Autowired
+    private final LocationRepository locRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -82,7 +78,9 @@ public class PrivateServiceImpl implements PrivateService {
                     String.format("Field: category. Error: Category with id=%s is not found. Value: " + newEventDto,
                             newEventDto.getCategory()));
         }
-        Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto, category.get(), initiator.get());
+        LocationEntity newLocation = locRepository.save(
+                new LocationEntity(0L, newEventDto.getLocation().getLat(), newEventDto.getLocation().getLon()));
+        Event newEvent = EventMapper.mapNewEventDtoToEvent(newEventDto, category.get(), initiator.get(), newLocation);
         Event createdEvent = eventRepository.save(newEvent);
         Optional<EventFullDto> createdEventFullDto = Optional.of(
                 EventMapper.mapEventToEventFullDto(createdEvent));
