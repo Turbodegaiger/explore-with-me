@@ -124,12 +124,12 @@ public class PrivateServiceImpl implements PrivateService {
                     String.format("Event with id=%s is not found or not available, check request.", eventId));
         }
         EventState oldState = oldEvent.get().getState();
-        if (!oldState.equals(EventState.PENDING)) {
-            log.info("Невозможно изменить событие id={}, оно должно иметь статус PENDING. " +
+        if (oldState.equals(EventState.PUBLISHED)) {
+            log.info("Невозможно изменить событие id={}, оно должно иметь статус PENDING или CANCELED. " +
                     "Текущий статус: {}", eventId, oldState);
             throw new ValidationException(
-                    String.format("Cannot update event id=%s, it must have state PENDING. " +
-                            "Current state: %s.", eventId, oldState));
+                    String.format("Cannot update event id=%s, it must have state PENDING or CANCELED. " +
+                            "Current state is: %s.", eventId, oldState));
         }
         EventState newState = UpdateHelper.getStateForUserUpdate(update, oldEvent.get(), oldState);
         LocalDateTime newDateTime = UpdateHelper.getEventDateForUpdate(update, oldEvent.get());
