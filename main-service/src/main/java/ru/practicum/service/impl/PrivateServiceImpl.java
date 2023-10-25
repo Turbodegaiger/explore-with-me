@@ -324,7 +324,7 @@ public class PrivateServiceImpl implements PrivateService {
             throw new NotFoundException(
                     String.format("Event with id=%s is not found or not available, check request.", eventId));
         }
-        if (request.get().getStatus() == RequestStatus.CONFIRMED) {
+        if (request.get().getStatus() != RequestStatus.CANCELED || request.get().getStatus() != RequestStatus.REJECTED) {
             event.get().setConfirmedRequests(event.get().getConfirmedRequests() - 1);
             eventRepository.save(event.get());
             if (!event.get().getAvailable()) {
