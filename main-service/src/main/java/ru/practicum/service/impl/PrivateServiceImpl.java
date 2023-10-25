@@ -304,13 +304,20 @@ public class PrivateServiceImpl implements PrivateService {
     }
 
     @Override
-    public ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(Long userId, Long eventId) {
-        Optional<Request> request = requestRepository.findByEventIdAndRequesterId(eventId, userId);
+    public ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(Long userId, Long requestId) {
+        Optional<Request> request = requestRepository.findById(requestId);
         if (request.isEmpty()) {
-            log.info("Не найден запрос на участие в событии id={} от пользователя с id={}.", eventId, userId);
+            log.info("Не найден запрос на участие id={}.", requestId);
             throw new NotFoundException(
-                    String.format("Request for event id=%s from user id=%s was not found.", eventId, userId));
+                    String.format("Request id=%s was not found.", requestId));
         }
+        Optional<User> user = userRepository.findById(userId);
+        if (user.isEmpty()) {
+            log.info("Не найден пользователь с id={}.", userId);
+            throw new NotFoundException(
+                    String.format("User with id=%s is not found, check request.", userId));
+        }
+        Long eventId = request.get().getEvent().getId();
         Optional<Event> event = eventRepository.findById(eventId);
         if (event.isEmpty()) {
             log.info("Событие с id={} не найдено или недоступно.", eventId);

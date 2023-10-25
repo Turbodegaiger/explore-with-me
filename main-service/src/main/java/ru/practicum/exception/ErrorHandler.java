@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.dto.error.ApiError;
 
 import javax.validation.ConstraintViolationException;
@@ -83,12 +84,12 @@ public class ErrorHandler {
         return new ApiError(exception.getLocalizedMessage(), reason, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ApiError handleDatabaseDataConflict(final org.springframework.dao.DataIntegrityViolationException exception) {
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ApiError handleDatabaseDataConflict(final DataIntegrityViolationException exception) {
         log.info("Произошла ошибка, не выполнены условия для загрузки в базу данных (constraints). {}", exception.getClass());
         String reason = "Incorrectly made request.";
-        return new ApiError(exception.getCause().getCause().getMessage(), reason, HttpStatus.BAD_REQUEST);
+        return new ApiError(exception.getCause().getCause().getMessage(), reason, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
