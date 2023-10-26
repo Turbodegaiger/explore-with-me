@@ -1,4 +1,4 @@
-package ru.practicum.controller;
+package ru.practicum.controller.privat;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,59 +7,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.EventRequestStatusUpdateRequest;
 import ru.practicum.dto.request.EventRequestStatusUpdateResult;
 import ru.practicum.dto.request.ParticipationRequestDto;
-import ru.practicum.service.PrivateService;
+import ru.practicum.service.RequestService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/users/{userId}")
 @RequiredArgsConstructor
 @Slf4j
 @Validated
-public class PrivateController {
+public class RequestPrivateController {
     @Autowired
-    private final PrivateService service;
+    private final RequestService service;
 
-    @GetMapping("/{userId}/events")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<List<EventShortDto>> getUserEvents(@PathVariable Long userId,
-                                                             @RequestParam(required = false, defaultValue = "0") Integer from,
-                                                             @RequestParam(required = false, defaultValue = "10") Integer size) {
-        log.info("Принят private запрос на поиск событий, добавленных пользователем id = {}: from = {}, size = {}.", userId, from, size);
-        return service.getUserEvents(userId, from, size);
-    }
-
-    @PostMapping("/{userId}/events")
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<EventFullDto> createEvent(@PathVariable Long userId,
-                                                    @RequestBody @Valid NewEventDto eventDto) {
-        log.info("Принят private запрос на создание события пользователем id = {}: {}.", userId, eventDto);
-        return service.createEvent(userId, eventDto);
-    }
-
-    @GetMapping("/{userId}/events/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<EventFullDto> getUserEvent(@PathVariable Long userId,
-                                                     @PathVariable Long eventId) {
-        log.info("Принят private запрос на получение события id = {} пользователем id = {}.", eventId, userId);
-        return service.getUserEvent(userId, eventId);
-    }
-
-    @PatchMapping("/{userId}/events/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<EventFullDto> updateUserEvent(@PathVariable Long userId,
-                                                        @PathVariable Long eventId,
-                                                        @RequestBody @Valid UpdateEventRequest update) {
-        log.info("Принят private запрос на обновление события id = {} пользователем id = {}: {}.", eventId, userId, update);
-        return service.updateUserEvent(userId, eventId, update);
-    }
-
-    @GetMapping("/{userId}/events/{eventId}/requests")
+    @GetMapping("/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<ParticipationRequestDto>> getRequestsToEvent(@PathVariable Long userId,
                                                                             @PathVariable Long eventId) {
@@ -67,7 +31,7 @@ public class PrivateController {
         return service.getRequestsToEvent(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/events/{eventId}/requests")
+    @PatchMapping("/events/{eventId}/requests")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<EventRequestStatusUpdateResult> updateRequestStatus(@PathVariable Long userId,
                                                                               @PathVariable Long eventId,
@@ -76,14 +40,14 @@ public class PrivateController {
         return service.updateRequestStatus(userId, eventId, update);
     }
 
-    @GetMapping("/{userId}/requests")
+    @GetMapping("/requests")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<ParticipationRequestDto>> getUserRequests(@PathVariable Long userId) {
         log.info("Принят private запрос на получение списка запросов на участие в чужих событиях пользователем id = {}.", userId);
         return service.getUserRequests(userId);
     }
 
-    @PostMapping("/{userId}/requests")
+    @PostMapping("/requests")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<ParticipationRequestDto> createRequestToEvent(@PathVariable Long userId,
                                                                         @RequestParam Long eventId) {
@@ -91,7 +55,7 @@ public class PrivateController {
         return service.createRequestToEvent(userId, eventId);
     }
 
-    @PatchMapping("/{userId}/requests/{requestId}/cancel")
+    @PatchMapping("/requests/{requestId}/cancel")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ParticipationRequestDto> cancelRequestToEvent(@PathVariable Long userId,
                                                                         @PathVariable Long requestId) {
