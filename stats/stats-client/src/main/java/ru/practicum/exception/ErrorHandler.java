@@ -2,6 +2,7 @@ package ru.practicum.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -14,21 +15,28 @@ public class ErrorHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleWrongArgument(final MethodArgumentTypeMismatchException exception) {
-        log.info("Ошибка: {}", exception.getMessage());
+        log.info("Ошибка: {}. {}", exception.getMessage(), exception.getClass());
         return new ErrorResponse("Некорректно указаны параметры запроса.");
     }
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleWrongArgument(final NotFoundException exception) {
-        log.info("Ошибка: {}", exception.getMessage());
+        log.info("Ошибка: {}. {}", exception.getMessage(), exception.getClass());
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleFailedValidation(final ValidationException exception) {
-        log.info("Ошибка: {}", exception.getMessage());
+        log.info("Ошибка: {}. {}", exception.getMessage(), exception.getClass());
+        return new ErrorResponse(exception.getMessage());
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleIncorrectRequestParams(final MissingServletRequestParameterException exception) {
+        log.info("Ошибка: {}. {}", exception.getMessage(), exception.getClass());
         return new ErrorResponse(exception.getMessage());
     }
 

@@ -9,33 +9,29 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.dto.EndpointHit;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @Service
-public class StatsClient extends BaseClient {
+public class MainServiceClient extends BaseClient {
 
     @Autowired
-    public StatsClient(@Value("${stats-server.url:http://localhost:9080}") String serverUrl, RestTemplateBuilder builder) {
+    public MainServiceClient(@Value("${stats-client.url:http://localhost:9090}") String serverUrl, RestTemplateBuilder builder) {
         super(
-            builder
+                builder
                         .uriTemplateHandler(new DefaultUriBuilderFactory(serverUrl))
                         .requestFactory(HttpComponentsClientHttpRequestFactory::new)
                         .build()
         );
     }
 
-    public ResponseEntity<Object> saveHit(EndpointHit hit) {
-        return post("/hit", hit);
+    public void saveHit(EndpointHit hit) {
+        post("/hit", hit);
     }
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
-        String encodedStart = URLEncoder.encode(start, StandardCharsets.UTF_8);
-        String encodedEnd = URLEncoder.encode(end, StandardCharsets.UTF_8);
         StringBuilder sb = new StringBuilder();
         String urisString = uris.toString();
         urisString = sb.append(urisString, 1, urisString.length() - 1).toString();
-        return get("/stats?start=" + encodedStart + "&end=" + encodedEnd + "&uris=" + urisString + "&unique=" + unique);
+        return get("/stats?start=" + start + "&end=" + end + "&uris=" + urisString + "&unique=" + unique);
     }
 }

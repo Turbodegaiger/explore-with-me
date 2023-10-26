@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.dto.EndpointHit;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.mapper.StatsMapper;
 import ru.practicum.model.Stats;
 import ru.practicum.repository.StatsRepository;
@@ -41,6 +42,11 @@ public class StatsServerServiceImpl implements StatsServerService {
         String encodedEnd = URLDecoder.decode(end, StandardCharsets.UTF_8);
         LocalDateTime startDateTime = DateTimeUtils.formatToLocalDT(encodedStart);
         LocalDateTime endDateTime = DateTimeUtils.formatToLocalDT(encodedEnd);
+        if (startDateTime.isAfter(endDateTime)) {
+            log.info("Передан некорректный диапазон времени: start={}, end={}.", start, end);
+            throw new ValidationException(String.format(
+                    "Передан некорректный диапазон времени: start=%s, end=%s.", start, end));
+        }
         List<ViewStats> statsList;
         if (uris.isEmpty()) {
             if (unique) {
