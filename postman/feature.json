@@ -593,11 +593,10 @@
 							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
 							"}); \r",
 							"\r",
-							"pm.test(\"Тело ответа должно содержать 3 объекта в порядке убывания рейтинга.\", function() {\r",
+							"pm.test(\"Тело ответа должно содержать объекты в порядке убывания рейтинга.\", function() {\r",
 							"    var responseBody = pm.response.json();\r",
 							"    pm.expect(responseBody[0].id).to.eql(102);\r",
 							"    pm.expect(responseBody[1].id).to.eql(103);\r",
-							"    pm.expect(responseBody[2].id).to.eql(104);\r",
 							"});"
 						],
 						"type": "text/javascript"

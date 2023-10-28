@@ -1,2 +1,4 @@
 # java-explore-with-me
-Template repository for ExploreWithMe project.
+Project for planning where to go and posting new events.
+
+https://github.com/Turbodegaiger/explore-with-me/pull/5
