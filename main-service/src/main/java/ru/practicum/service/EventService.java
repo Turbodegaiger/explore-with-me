@@ -2,6 +2,8 @@ package ru.practicum.service;
 
 import org.springframework.http.ResponseEntity;
 import ru.practicum.dto.event.*;
+import ru.practicum.dto.like.EventLikeStatisticsDto;
+import ru.practicum.dto.like.LikeDto;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,4 +31,10 @@ public interface EventService {
     ResponseEntity<List<EventShortDto>> getEvents(EventsPublicSearchDto searchDto, HttpServletRequest request);
 
     ResponseEntity<EventFullDto> getEventById(Long eventId, HttpServletRequest request);
+
+    ResponseEntity<LikeDto> setLikeOrDislikeToEvent(Long userId, Long eventId, Boolean isLike);
+
+    ResponseEntity<EventLikeStatisticsDto> getEventLikeStatistics(Long userId, Long eventId);
+
+    void deleteLikeOrDislikeToEvent(Long userId, Long eventId);
 }

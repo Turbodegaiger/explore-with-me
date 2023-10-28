@@ -15,18 +15,21 @@ import ru.practicum.client.MainServiceClient;
 import ru.practicum.dto.EndpointHit;
 import ru.practicum.dto.ViewStats;
 import ru.practicum.dto.event.*;
+import ru.practicum.dto.like.EventLikeStatisticsDto;
+import ru.practicum.dto.like.LikeDto;
+import ru.practicum.dto.user.UserShortDto;
 import ru.practicum.enums.event.EventSort;
 import ru.practicum.enums.event.EventState;
+import ru.practicum.exception.AlreadyExistsException;
 import ru.practicum.exception.DataConflictException;
 import ru.practicum.exception.IncorrectRequestException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.EventMapper;
+import ru.practicum.mapper.LikeMapper;
+import ru.practicum.mapper.UserMapper;
 import ru.practicum.mapper.ViewStatsMapper;
 import ru.practicum.model.*;
-import ru.practicum.repository.CategoryRepository;
-import ru.practicum.repository.EventRepository;
-import ru.practicum.repository.LocationRepository;
-import ru.practicum.repository.UserRepository;
+import ru.practicum.repository.*;
 import ru.practicum.service.EventService;
 import ru.practicum.util.DateTimeUtils;
 import ru.practicum.util.UpdateHelper;
@@ -36,6 +39,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -51,6 +55,8 @@ public class EventServiceImpl implements EventService {
     private final LocationRepository locRepository;
     @Autowired
     private final UserRepository userRepository;
+    @Autowired
+    private final LikeRepository likeRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -257,6 +263,9 @@ public class EventServiceImpl implements EventService {
             if (s.getSort() == EventSort.VIEWS) {
                 sortBy = "views";
             }
+            if (s.getSort() == EventSort.RATING) {
+                sortBy = "rating";
+            }
         }
         Pageable pageParams = PageRequest.of(
                 s.getFrom() > 0 ? s.getFrom() / s.getSize() : 0, s.getSize(), Sort.by(Sort.Direction.DESC, sortBy));
@@ -276,6 +285,85 @@ public class EventServiceImpl implements EventService {
         EventFullDto fullDto = EventMapper.mapEventToEventFullDto(event);
         log.info("Успешно выгружено событие id={}. Value: {}", eventId, fullDto);
         return ResponseEntity.of(Optional.of(fullDto));
+    }
+
+    @Override
+    public ResponseEntity<LikeDto> setLikeOrDislikeToEvent(Long userId, Long eventId, Boolean isLike) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("User with id=%s is not found, check request.", userId)));
+        Event event = eventRepository.findByIdAndState(eventId, EventState.PUBLISHED)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Event with id=%s is not found or not available, check request.", eventId)));
+        Like newLike;
+        long changeRating;
+        Optional<Like> like = likeRepository.findByEventIdAndUserId(eventId, userId);
+        if (like.isPresent()) {
+            if (isLike == like.get().getIsLiked()) {
+                log.info("Пользователь id={} уже ставил оценку событию id={}.", userId, eventId);
+                throw new AlreadyExistsException(String.format("User id=%s is already rated event id=%s.", userId, eventId));
+            } else {
+                like.get().setIsLiked(isLike);
+                newLike = likeRepository.save(like.get());
+                changeRating = isLike ? 2L : -2L;
+            }
+        } else {
+            newLike = likeRepository.save(new Like(0L, event, user, isLike));
+            changeRating = isLike ? 1L : -1L;
+        }
+        updateLikeCount(event, changeRating);
+        log.info("Пользователь id={} оставил оценку событию id={}: isLike={}.", userId, eventId, isLike);
+        return ResponseEntity.status(HttpStatus.CREATED).body(LikeMapper.mapLikeToLikeDto(newLike));
+    }
+
+    @Override
+    public void deleteLikeOrDislikeToEvent(Long userId, Long eventId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("User with id=%s is not found, check request.", userId)));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Event with id=%s is not found or not available, check request.", eventId)));
+        Optional<Like> like = likeRepository.findByEventIdAndUserId(eventId, userId);
+        if (like.isPresent()) {
+            deleteLike(like.get());
+            log.info("Пользователь id={} снял оценку с события id={}.", userId, eventId);
+        }
+    }
+
+    @Override
+    public ResponseEntity<EventLikeStatisticsDto> getEventLikeStatistics(Long userId, Long eventId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("User with id=%s is not found, check request.", userId)));
+        Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("Event with id=%s is not found or not available, check request.", eventId)));
+        List<UserShortDto> usersLiked = likeRepository.findByEventIdAndIsLiked(eventId, true).stream()
+                .map((like) -> UserMapper.mapUserToUserShortDto(like.getUser()))
+                .collect(Collectors.toList());
+        List<UserShortDto> usersDisliked = likeRepository.findByEventIdAndIsLiked(eventId, false).stream()
+                .map((like) -> UserMapper.mapUserToUserShortDto(like.getUser()))
+                .collect(Collectors.toList());
+        EventLikeStatisticsDto likeStatisticsDto = new EventLikeStatisticsDto(
+                EventMapper.mapEventToEventShortDto(event),
+                event.getRating(),
+                usersLiked,
+                usersDisliked);
+        log.info("Пользователь id={} выгрузил статистику оценок для события id={}: {}.", userId, eventId, likeStatisticsDto);
+        return ResponseEntity.of(Optional.of(likeStatisticsDto));
+    }
+
+    private LikeDto deleteLike(Like like) {
+        likeRepository.delete(like);
+        Long changeRating = like.getIsLiked() ? -1L : 1L;
+        updateLikeCount(like.getEvent(), changeRating);
+        return LikeMapper.mapLikeToLikeDto(like);
+    }
+
+    private void updateLikeCount(Event event, Long change) {
+        event.setRating(event.getRating() + change);
+        eventRepository.save(event);
     }
 
     private void saveEndpointHit(HttpServletRequest request) {
