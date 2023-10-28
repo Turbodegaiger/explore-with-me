@@ -29,7 +29,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/like?isLike=true",
+					"raw": "http://localhost:8080/users/1/events/102/like?isLike=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -39,7 +39,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"like"
 					],
 					"query": [
@@ -75,7 +75,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/2/events/1/like?isLike=true",
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -85,7 +85,7 @@
 						"users",
 						"2",
 						"events",
-						"1",
+						"102",
 						"like"
 					],
 					"query": [
@@ -121,7 +121,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/3/events/1/like?isLike=false",
+					"raw": "http://localhost:8080/users/3/events/102/like?isLike=false",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -131,7 +131,7 @@
 						"users",
 						"3",
 						"events",
-						"1",
+						"102",
 						"like"
 					],
 					"query": [
@@ -163,7 +163,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/2/events/1/like",
+					"raw": "http://localhost:8080/users/2/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -173,7 +173,7 @@
 						"users",
 						"2",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -208,7 +208,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/like",
+					"raw": "http://localhost:8080/users/133/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -216,9 +216,9 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"133",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -244,7 +244,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/3/events/1/like",
+					"raw": "http://localhost:8080/users/3/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -254,7 +254,7 @@
 						"users",
 						"3",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -289,7 +289,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/like",
+					"raw": "http://localhost:8080/users/1/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -299,7 +299,7 @@
 						"users",
 						"1",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -329,7 +329,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/2/events/1/like?isLike=false",
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=false",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -339,7 +339,7 @@
 						"users",
 						"2",
 						"events",
-						"1",
+						"102",
 						"like"
 					],
 					"query": [
@@ -380,7 +380,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/like",
+					"raw": "http://localhost:8080/users/133/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -388,9 +388,9 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"133",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -420,7 +420,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/2/events/1/like?isLike=true",
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -430,7 +430,7 @@
 						"users",
 						"2",
 						"events",
-						"1",
+						"102",
 						"like"
 					],
 					"query": [
@@ -471,7 +471,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/1/like",
+					"raw": "http://localhost:8080/users/133/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -479,9 +479,9 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"133",
 						"events",
-						"1",
+						"102",
 						"like"
 					]
 				}
@@ -511,7 +511,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/3/events/2/like?isLike=true",
+					"raw": "http://localhost:8080/users/3/events/103/like?isLike=true",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -521,7 +521,7 @@
 						"users",
 						"3",
 						"events",
-						"2",
+						"103",
 						"like"
 					],
 					"query": [
@@ -557,7 +557,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/3/like?isLike=false",
+					"raw": "http://localhost:8080/users/1/events/104/like?isLike=false",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -567,7 +567,7 @@
 						"users",
 						"1",
 						"events",
-						"3",
+						"104",
 						"like"
 					],
 					"query": [
