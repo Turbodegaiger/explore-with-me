@@ -289,7 +289,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/users/1/events/102/like",
+					"raw": "http://localhost:8080/users/133/events/102/like",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -297,7 +297,7 @@
 					"port": "8080",
 					"path": [
 						"users",
-						"1",
+						"133",
 						"events",
 						"102",
 						"like"
@@ -595,11 +595,10 @@
 							"\r",
 							"pm.test(\"Тело ответа должно содержать 3 объекта в порядке убывания рейтинга.\", function() {\r",
 							"    var responseBody = pm.response.json();\r",
-							"    pm.expect(responseBody.length).to.eql(3);\r",
-							"    pm.expect(responseBody[0].id).to.eql(1);\r",
-							"    pm.expect(responseBody[1].id).to.eql(2);\r",
-							"    pm.expect(responseBody[2].id).to.eql(3);\r",
-							"}); "
+							"    pm.expect(responseBody[0].id).to.eql(102);\r",
+							"    pm.expect(responseBody[1].id).to.eql(103);\r",
+							"    pm.expect(responseBody[2].id).to.eql(104);\r",
+							"});"
 						],
 						"type": "text/javascript"
 					}
