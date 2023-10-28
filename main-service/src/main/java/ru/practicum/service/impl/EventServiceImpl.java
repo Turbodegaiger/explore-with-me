@@ -158,7 +158,6 @@ public class EventServiceImpl implements EventService {
         EventFullDto createdEventFullDto = EventMapper.mapEventToEventFullDto(createdEvent);
         log.info("Успешно создано новое событие: {}", createdEventFullDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEventFullDto);
-
     }
 
     @Override
