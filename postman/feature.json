@@ -1,0 +1,630 @@
+{
+	"info": {
+		"_postman_id": "d9746e4b-a1cf-4a2f-9a2e-9990e7ad076e",
+		"name": "Deeplome feature rating",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26180131"
+	},
+	"item": [
+		{
+			"name": "Добавление лайка событию 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=true\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(true);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/1/events/102/like?isLike=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"1",
+						"events",
+						"102",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление второго лайка событию 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=true\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(true);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"2",
+						"events",
+						"102",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление дизлайка событию 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=false\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(false);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/3/events/102/like?isLike=false",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"3",
+						"events",
+						"102",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Ошибка при попытке доступа не от инициатора события к статистике лайков",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 404\", function() {\r",
+							"    pm.response.to.have.status(404); // код ответа должен быть равен 200 OK\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/2/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"2",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение статистики по лайкам и дизлайкам к событию",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"}); \r",
+							"\r",
+							"pm.test(\"Тело ответа должно содержать рейтинг 1, 2 пользователя в usersLiked и 1 пользователя в usersDisliked\", function() {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.rating).to.eql(1);\r",
+							"    pm.expect(responseBody.usersLiked.length).to.eql(2);\r",
+							"    pm.expect(responseBody.usersDisliked.length).to.eql(1);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/133/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"133",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Удаление дизлайка от пользователя 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 204\", function() {\r",
+							"    pm.response.to.have.status(204); // код ответа должен быть равен 200 OK\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/3/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"3",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение статистики по лайкам и дизлайкам к событию",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"}); \r",
+							"\r",
+							"pm.test(\"Тело ответа должно содержать рейтинг 2, 2 пользователя в usersLiked и 0 пользователей в usersDisliked\", function() {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.rating).to.eql(2);\r",
+							"    pm.expect(responseBody.usersLiked.length).to.eql(2);\r",
+							"    pm.expect(responseBody.usersDisliked.length).to.eql(0);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/133/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"133",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение лайка на дизлайк от пользователя 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=false\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(false);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=false",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"2",
+						"events",
+						"102",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение статистики по лайкам и дизлайкам к событию",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"}); \r",
+							"\r",
+							"pm.test(\"Тело ответа должно содержать рейтинг 0, 1 пользователь в usersLiked и 1 пользователь в usersDisliked\", function() {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.rating).to.eql(0);\r",
+							"    pm.expect(responseBody.usersLiked.length).to.eql(1);\r",
+							"    pm.expect(responseBody.usersDisliked.length).to.eql(1);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/133/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"133",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Изменение дизлайка на лайк от пользователя 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=true\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(true);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/2/events/102/like?isLike=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"2",
+						"events",
+						"102",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Получение статистики по лайкам и дизлайкам к событию",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"}); \r",
+							"\r",
+							"pm.test(\"Тело ответа должно содержать рейтинг 2, 2 пользователя в usersLiked и 0 пользователей в usersDisliked\", function() {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.rating).to.eql(2);\r",
+							"    pm.expect(responseBody.usersLiked.length).to.eql(2);\r",
+							"    pm.expect(responseBody.usersDisliked.length).to.eql(0);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/133/events/102/like",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"133",
+						"events",
+						"102",
+						"like"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление лайка событию 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=true\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(true);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/3/events/103/like?isLike=true",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"3",
+						"events",
+						"103",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Добавление  дизлайка событию 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 201 и данные в формате json и поле isLiked=false\", function() {\r",
+							"    pm.response.to.have.status(201); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody.isLiked).to.eql(false);\r",
+							"}); "
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/users/1/events/104/like?isLike=false",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"1",
+						"events",
+						"104",
+						"like"
+					],
+					"query": [
+						{
+							"key": "isLike",
+							"value": "false"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Публичный запрос с сортировкой по рейтингу",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {\r",
+							"    pm.response.to.have.status(200); // код ответа должен быть равен 200 OK\r",
+							"    pm.response.to.be.withBody; // ответ должен содержать тело\r",
+							"    pm.response.to.be.json; // и тело ответа должно быть в формате JSON\r",
+							"}); \r",
+							"\r",
+							"pm.test(\"Тело ответа должно содержать объекты в порядке убывания рейтинга.\", function() {\r",
+							"    var responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody[0].id).to.eql(102);\r",
+							"    pm.expect(responseBody[1].id).to.eql(103);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/events?sort=RATING",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"events"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "RATING"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

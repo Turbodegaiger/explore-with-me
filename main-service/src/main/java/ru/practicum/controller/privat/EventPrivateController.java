@@ -11,6 +11,8 @@ import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.event.NewEventDto;
 import ru.practicum.dto.event.UpdateEventRequest;
+import ru.practicum.dto.like.EventLikeStatisticsDto;
+import ru.practicum.dto.like.LikeDto;
 import ru.practicum.service.EventService;
 
 import javax.validation.Valid;
@@ -30,7 +32,7 @@ public class EventPrivateController {
     public ResponseEntity<List<EventShortDto>> getUserEvents(@PathVariable Long userId,
                                                              @RequestParam(required = false, defaultValue = "0") Integer from,
                                                              @RequestParam(required = false, defaultValue = "10") Integer size) {
-        log.info("Принят private запрос на поиск событий, добавленных пользователем id = {}: from = {}, size = {}.", userId, from, size);
+        log.info("Принят private запрос на поиск событий, добавленных пользователем id={}: from={}, size={}.", userId, from, size);
         return service.getUserEvents(userId, from, size);
     }
 
@@ -38,7 +40,7 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<EventFullDto> createEvent(@PathVariable Long userId,
                                                     @RequestBody @Valid NewEventDto eventDto) {
-        log.info("Принят private запрос на создание события пользователем id = {}: {}.", userId, eventDto);
+        log.info("Принят private запрос на создание события пользователем id={}: {}.", userId, eventDto);
         return service.createEvent(userId, eventDto);
     }
 
@@ -46,7 +48,7 @@ public class EventPrivateController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<EventFullDto> getUserEvent(@PathVariable Long userId,
                                                      @PathVariable Long eventId) {
-        log.info("Принят private запрос на получение события id = {} пользователем id = {}.", eventId, userId);
+        log.info("Принят private запрос на получение события id={} пользователем id={}.", eventId, userId);
         return service.getUserEvent(userId, eventId);
     }
 
@@ -55,7 +57,32 @@ public class EventPrivateController {
     public ResponseEntity<EventFullDto> updateUserEvent(@PathVariable Long userId,
                                                         @PathVariable Long eventId,
                                                         @RequestBody @Valid UpdateEventRequest update) {
-        log.info("Принят private запрос на обновление события id = {} пользователем id = {}: {}.", eventId, userId, update);
+        log.info("Принят private запрос на обновление события id={} пользователем id={}: {}.", eventId, userId, update);
         return service.updateUserEvent(userId, eventId, update);
+    }
+
+    @PostMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<LikeDto> setLikeOrDislikeToEvent(@PathVariable Long userId,
+                                                           @PathVariable Long eventId,
+                                                           @RequestParam Boolean isLike) {
+        log.info("Принят private запрос на лайк событию id={} пользователем id={}: {}.", eventId, userId, isLike);
+        return service.setLikeOrDislikeToEvent(userId, eventId, isLike);
+    }
+
+    @DeleteMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLikeOrDislikeToEvent(@PathVariable Long userId,
+                                           @PathVariable Long eventId) {
+        log.info("Принят private запрос на удаление лайка/дизлайка событию id={} пользователем id={}.", eventId, userId);
+        service.deleteLikeOrDislikeToEvent(userId, eventId);
+    }
+
+    @GetMapping("/{eventId}/like")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<EventLikeStatisticsDto> getEventLikeStatistics(@PathVariable Long userId,
+                                                                         @PathVariable Long eventId) {
+        log.info("Принят private запрос получение детализации по лайкам события id={} от пользователя id={}.", eventId, userId);
+        return service.getEventLikeStatistics(userId, eventId);
     }
 }

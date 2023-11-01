@@ -39,14 +39,6 @@ public class EventsPublicSearchDto {
         this.size = size;
     }
 
-//    public void setRangeStart(String rangeStart) {
-//        this.rangeStart = DateTimeUtils.formatToLocalDT(rangeStart);
-//    }
-//
-//    public void setRangeEnd(String rangeEnd) {
-//        this.rangeEnd = DateTimeUtils.formatToLocalDT(rangeEnd);
-//    }
-
     public void setSort(String sort) {
         if (sort != null && !sort.isEmpty()) {
             this.sort = EventSort.valueOf(sort);

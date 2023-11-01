@@ -5,6 +5,7 @@ import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,11 +69,14 @@ public class ErrorHandler {
             IncorrectRequestException.class,
             IllegalArgumentException.class,
             HttpMessageNotReadableException.class,
-            MissingServletRequestParameterException.class
+            MissingServletRequestParameterException.class,
+            IllegalStateException.class,
+            HttpMediaTypeNotSupportedException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentTypeMismatch(final RuntimeException exception) {
-        log.info("Прислан некорректный запрос, проверьте аргументы, тело, имена, типы присылаемых данных. {} || {}", exception.getClass(), exception.getMessage());
+        log.info("Прислан некорректный запрос, проверьте аргументы, тело, имена, типы присылаемых данных. {} || {}",
+                exception.getClass(), exception.getMessage());
         String reason = "Incorrectly made request.";
         return new ApiError(exception.getLocalizedMessage(), reason, HttpStatus.BAD_REQUEST);
     }
