@@ -11,5 +11,5 @@ Project Explore With Me is made for planning where to go and for posting new eve
 
 Для запуска приложения потребуется установленный Docker.
 Структуру можно посмотреть в файле docker-compose.yml в корневой папке.
-При помощи терминала необходимо создать docker image для main-service, stats-server и stats-client, после чего командой "docker-compose up" запустить приложение.
-Образы также можно скачать с docker hub при помощи команд: "docker pull tbdggr/ewm-service-image", "docker pull tbdggr/stats-server-image", "docker pull tbdggr/stats-client-image".
+При помощи терминала необходимо командой "docker-compose up" запустить приложение.
+Образы docker image при необходимости также можно скачать с docker hub при помощи команд: "docker pull tbdggr/ewm-service-image", "docker pull tbdggr/stats-server-image", "docker pull tbdggr/stats-client-image".
